@@ -1,0 +1,37 @@
+﻿<Window x:Class="PLWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        mc:Ignorable="d"
+        Title="!חופשה נעימה" Height="650" Width="1100" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Background="Navy" >
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Foreground" Value="Brown"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Background" Value="Aquamarine"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="Aqua"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+    <Grid >
+        <Grid.Background>
+            <ImageBrush ImageSource="https://ae01.alicdn.com/kf/HTB1.doVcuuSBuNjSsplq6ze8pXaG/-.jpg" Stretch="UniformToFill"></ImageBrush>
+        </Grid.Background>
+        <StackPanel>
+        <Button Name="addGuestRequest" Content="חיפוש צימר" FontSize="20"  VerticalContentAlignment="Center"  VerticalAlignment="Center"  Click="AddGuestRequest_Click"  Margin="20,50"/>
+            <Button Name="hostingUnitManage" Content=" (ניהול יחידות אירוח (איזור אישי" FontSize="20"   VerticalAlignment="Center"   Click="HostingUnitManage_Click" Margin="20,0"/>
+            <Button Name="orderManage" Content="ניהול הזמנות" FontSize="20"    VerticalAlignment="Center"  Click="OrderManage_Click"    Margin="20,50"/>
+            <Button Content="מנהל האתר" Margin="20,0" Click="owner"  />
+            <Label Content="!חופשה נעימה" FontSize="40" HorizontalAlignment="Center" FontFamily="Segoe UI Black" Foreground="#FF070EF7" RenderTransformOrigin="0.556,1.032"   Margin="411,0,395.333,0" Width="287"   />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,129 @@
+﻿<Window x:Class="PLWPF.AddGuestRequest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        
+        mc:Ignorable="d"
+        Title="הזמנת צימר" Height="650" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Width="1100" >
+    <Window.Resources>
+        <Style x:Key="ComboxStyle" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="Brown" />
+            <Setter Property="Width" Value="78" />
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Height" Value="22"/>
+        </Style>
+        
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Width" Value="78" />
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Height" Value="22"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseCaptured" Value="true">
+                    <Setter Property="Text" Value=""/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="LabelStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="Segoe UI Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="GreenYellow"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Name="grid" DataContext="Dates">
+        <Grid.Background>
+            <ImageBrush ImageSource="https://www.misgeret.co.il/Pics/DnD-production/289618-1613-24-08-16-L.jpg" Stretch="UniformToFill"></ImageBrush>
+        </Grid.Background>
+        <Calendar Name="EntryDate"   SelectionMode="SingleDate" SelectedDatesChanged="CheckInSelected"  HorizontalAlignment="Left" Margin="882,49,0,0" VerticalAlignment="Top"/>
+        <Calendar Name="RelaeseDate"  SelectionMode="SingleDate" SelectedDatesChanged="EndDate" HorizontalAlignment="Left" Margin="882,256,0,0" VerticalAlignment="Top"/>
+        <Label  Content="צ'ק אין" HorizontalAlignment="Left" Margin="946,18,0,0" VerticalAlignment="Top" Background="Beige"/>
+        <Label Content="צ'ק אאוט" HorizontalAlignment="Left" Margin="943,230,0,0" VerticalAlignment="Top" Background="Beige"/>
+        <TextBox Name="Adults" Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Left"  Margin="882,450,0,0"  Text="0" VerticalAlignment="Top" Width="19"  RenderTransformOrigin="3.982,0.261" LostFocus="Adults_LostFocus"/>
+        <Label Style="{StaticResource LabelStyle}" Content=":מספר מבוגרים"  HorizontalAlignment="Left" Margin="946,445,0,0" VerticalAlignment="Top" Width="115"/>
+        <TextBox Name="Chilldren" Style="{StaticResource TextBoxStyle}"  HorizontalAlignment="Left"   Margin="882,492,0,0"  Text="0" VerticalAlignment="Top" Width="19" RenderTransformOrigin="3.982,0.261" LostFocus="Chilldren_LostFocus" />
+        <Label Style="{StaticResource LabelStyle}" Content=":מספר ילדים"  HorizontalAlignment="Left" Margin="946,487,0,0"  VerticalAlignment="Top" Width="94"/>
+        <Label Style="{StaticResource LabelStyle}" Content=":ממחיר" HorizontalAlignment="Left" Margin="359,71,0,0" VerticalAlignment="Top" Width="119"/>
+        <TextBox Style="{StaticResource TextBoxStyle}"  Name="MinCost" HorizontalAlignment="Left"  Margin="281,71,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" LostFocus="MinCost_LostFocus"  />
+        <Label Style="{StaticResource LabelStyle}" Content=": עד מחיר" HorizontalAlignment="Left" Margin="194,71,0,0" VerticalAlignment="Top" Width="72"/>
+        <TextBox Style="{StaticResource TextBoxStyle}" Name="MaxCost" HorizontalAlignment="Left"  Margin="111,71,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" LostFocus="MaxCost_LostFocus" />
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Type"  HorizontalAlignment="Left" Margin="281,128,0,0" VerticalAlignment="Top" SelectionChanged="Type_SelectionChanged">
+            <ComboBoxItem Name="type1" Content="צימר" />
+            <ComboBoxItem Name="type2" Content="מלון" />
+            <ComboBoxItem Name="type3" Content="לינת שטח" />
+            <ComboBoxItem Name="type4" Content="וילה" />
+            <ComboBoxItem Name="type5" Content="סאבלט" />
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="סוג אירוח" HorizontalAlignment="Left"  Margin="359,124,0,0" VerticalAlignment="Top" Width="85"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Area" HorizontalAlignment="Left" Margin="111,128,0,0" VerticalAlignment="Top" SelectionChanged="Area_SelectionChanged">
+            <ComboBoxItem Content="הכל" />
+            <ComboBoxItem Content="צפון"/>
+            <ComboBoxItem Content="דרום"/>
+            <ComboBoxItem Content="מרכז"/>
+            <ComboBoxItem Content="ירושלים"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="איזור" HorizontalAlignment="Left" Margin="211,124,0,0" VerticalAlignment="Top" Width="45"/>
+        <RadioButton Name="no"  GroupName="pension" Content="בלי ארוחות" Foreground="GreenYellow" HorizontalAlignment="Left" Margin="281,171,0,0" VerticalAlignment="Top" Checked="NoMeals" FontFamily="Segoe UI Black"/>
+        <RadioButton Name="twoMeals" GroupName="pension" Content="חצי פנסיון" Foreground="GreenYellow" HorizontalAlignment="Left" Margin="281,191,0,0" VerticalAlignment="Top" Checked="HalfMeals" FontFamily="Segoe UI Black"/>
+        <RadioButton Name="fullMeals" GroupName="pension" Content="פנסיון מלא" Foreground="GreenYellow" HorizontalAlignment="Left" Margin="281,211,0,0" VerticalAlignment="Top" Checked="ThreeMeals" FontFamily="Segoe UI Black"/>
+        <Label Style="{StaticResource LabelStyle}"  Content=":רמת פנסיון" HorizontalAlignment="Left" Margin="362,164,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.421,-0.327" Width="116" />
+        <Label Style="{StaticResource LabelStyle}" Content=":ספא" HorizontalAlignment="Left" Margin="211,159,0,0"  VerticalAlignment="Top" Width="45"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Spa" HorizontalAlignment="Left" Margin="111,167,0,0" VerticalAlignment="Top" SelectionChanged="Spa_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="טלוויזיה" HorizontalAlignment="Left" Margin="206,201,0,0" VerticalAlignment="Top"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="FlatTv" HorizontalAlignment="Left" Margin="111,204,0,0" VerticalAlignment="Top" SelectionChanged="FlatTv_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="מיזוג אוויר" HorizontalAlignment="Left" Margin="206,240,0,0" VerticalAlignment="Top"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="AirCondition" HorizontalAlignment="Left" Margin="111,244,0,0" VerticalAlignment="Top" SelectionChanged="AirCondition_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="בריכה" HorizontalAlignment="Left" Margin="211,271,0,0" VerticalAlignment="Top"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Pool" HorizontalAlignment="Left" Margin="111,275,0,0" VerticalAlignment="Top" SelectionChanged="Pool_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="ג'קוזי" HorizontalAlignment="Left" Margin="211,302,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.509,-0.282"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Jacuzzy" HorizontalAlignment="Left" Margin="111,306,0,0" VerticalAlignment="Top" SelectionChanged="Jacuzzy_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Label Style="{StaticResource LabelStyle}" Content="גינה" HorizontalAlignment="Left" Margin="374,248,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.096,0.077" Width="57"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Garden" HorizontalAlignment="Left" Margin="281,248,0,0" VerticalAlignment="Top" SelectionChanged="Garden_SelectionChanged">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+        <Button Name="Check" Content="חפש" FontSize="25" Background="Beige" Foreground="Brown" HorizontalAlignment="Left" Margin="113,487,0,0" VerticalAlignment="Top" Width="248" Height="50" Click="Check_Click"/>
+        <TextBox Name="LastName" LostFocus="LastName_LostFocus" GotFocus="LastName_GotFocus" Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Left" Height="26" Margin="111,365,0,0"  Text="שם משפחה" VerticalAlignment="Top" Width="77" TextChanged="LastName_TextChanged"/>
+        <TextBox Name="PrivateName" Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Left"  Height="26" Margin="301,365,0,0" TextWrapping="Wrap"  Text="שם פרטי" LostFocus="PrivateName_LostFocus" GotFocus="Private_GotFocus" VerticalAlignment="Top" Width="77" RenderTransformOrigin="-0.242,0.962" TextChanged="PrivateName_TextChanged"/>
+        <TextBox Name="Mail" LostFocus="Mail_LostFocus" GotFocus="Mail_GotFocus" Style="{StaticResource TextBoxStyle}" HorizontalAlignment="Left"  Margin="170,410,0,0" TextWrapping="Wrap" Text="כתובת מייל" Height="26" VerticalAlignment="Top" Width="114" TextChanged="Mail_TextChanged"/>
+        <Label Content="פרטים אישיים" Style="{StaticResource LabelStyle}" HorizontalAlignment="Left" Margin="188,365,0,0" VerticalAlignment="Top" Width="113"/>
+        <TextBlock Name="message" HorizontalAlignment="Left" Margin="449,492,0,0" Foreground="Brown" TextWrapping="Wrap" Background="WhiteSmoke" FontSize="28"  VerticalAlignment="Top" Height="50" Width="388"/>
+        <Label Content="אטרקציות לילדים" Style="{StaticResource LabelStyle}" HorizontalAlignment="Left" Margin="374,279,0,0" VerticalAlignment="Top"/>
+        <ComboBox Style="{StaticResource ComboxStyle}" Name="Atraction" HorizontalAlignment="Left" Margin="281,279,0,0" VerticalAlignment="Top" SelectionChanged="Atraction_Changed">
+            <ComboBoxItem Content="מעוניין"/>
+            <ComboBoxItem Content="אפשרי"/>
+            <ComboBoxItem Content="לא מעוניין"/>
+        </ComboBox>
+
+
+
+
+
+
+
+
+    </Grid>
+</Window>

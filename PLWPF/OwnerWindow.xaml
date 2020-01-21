@@ -1,0 +1,17 @@
+﻿<Window x:Class="PLWPF.OwnerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        mc:Ignorable="d"
+        Title="OwnerWindow" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Height="450" Width="700">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="https://image.shutterstock.com/image-vector/real-estate-developer-entrepreneur-concept-260nw-487692952.jpg"/>
+        </Grid.Background>
+        <Button Content="יחידות אירוח" Height="30" Background="Aqua" Foreground="Brown" FontSize="15" HorizontalAlignment="Left" Margin="297,53,0,0" VerticalAlignment="Top" Width="90" Click="ToHostings"/>
+        <Button Content="דרישות לקוח" Height="30" Background="Aqua" Foreground="Brown" FontSize="15" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90" Margin="392,53,0,0" Click="ToOwner"/>
+        <Label Content="?מה ברצונך לצפות" Height="30"  Foreground="Brown" FontSize="15" HorizontalAlignment="Left" Margin="504,53,0,0" VerticalAlignment="Top" Width="139"/>
+    </Grid>
+</Window>

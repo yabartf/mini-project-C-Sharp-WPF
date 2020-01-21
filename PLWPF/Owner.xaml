@@ -1,0 +1,27 @@
+﻿<Window x:Class="PLWPF.Owner"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        mc:Ignorable="d"
+        Title="מנהל האתר" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Height="650" Width="1100">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Foreground" Value="Brown"/>
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+    </Window.Resources>
+    <Grid Height="621" Margin="0,0,0.333,-0.333" VerticalAlignment="Bottom">
+            <Grid.Background>
+                <ImageBrush ImageSource="http://www.ykdesign.co.il/files/articles/item/thumbsrc/%D7%9E%D7%A9%D7%A8%D7%93__1_.jpg" Stretch="UniformToFill"/>
+            </Grid.Background>
+            <ListBox Name="ListOfGuestRequest"   ItemsSource="{Binding}"  HorizontalAlignment="Stretch"  FontStretch="Expanded" Foreground="Brown" Background="Beige"   Margin="48,192,37,0" VerticalAlignment="Top" FontFamily="Yu Gothic UI Semibold" FontSize="16" />
+            <Button Content="איזור" Click="ByArea"  HorizontalAlignment="Stretch" Margin="158.333,131,0,0" VerticalAlignment="Top"/>
+            <Button Content="מספר נופשים" Click="ByVacationer"   Margin="471,131,522,0" VerticalAlignment="Top"/>
+        </Grid>
+    
+</Window>

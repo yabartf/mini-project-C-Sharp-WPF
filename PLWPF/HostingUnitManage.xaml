@@ -1,0 +1,159 @@
+﻿<Window x:Class="PLWPF.HostingUnitManage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        mc:Ignorable="d"
+        Title="HostingUnitManage" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Height="450" Width="820">
+    <Window.Resources>
+
+        <Style TargetType="Button" >
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Foreground" Value="Brown"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="Aqua"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBox" >
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Foreground" Value="Brown"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Name="grid" >
+        <Grid.Background>
+            <ImageBrush ImageSource="https://img.mako.co.il/2014/12/30/Ice04_c.jpg" Stretch="Fill"></ImageBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="addOrUpdate" Grid.Column="1" Grid.Row="0" Click="AddOrUpdate_Click" Content="אישור" Margin="10,10,310,0" Width="70" Height="30" RenderTransformOrigin="-0.221,0.6" IsEnabled="False" />
+        <TextBox x:Name="hostingUnitName" TextChanged="HostingUnitName_TextChanged" LostFocus="HostingUnitName_LostFocus" Grid.Column="1" Grid.Row="0"  Width="70" Height="20" Margin="10,10,150,0" VerticalAlignment="Center" RenderTransformOrigin="0.832,0.479" />
+        <Label Content=":שם היחידה" Grid.Column="1" Grid.Row="0" Margin="163.2,25,-13.4,60.8" Grid.RowSpan="2" />
+        <TextBox x:Name="hostingUnitKey" TextChanged="HostingUnitKey_TextChanged" LostFocus="HostingUnitKey_LostFocus" Grid.Column="1" Grid.Row="0" Width="70" Height="20" Margin="140,10,5,0" VerticalAlignment="Center"/>
+        <Label Content=":מספר היחידה" Grid.Column="1" Grid.Row="0" Margin="301.2,25,9.6,0.4" />
+
+
+
+        <TextBox Name="familyName" LostFocus="FamilyName_LostFocus" Grid.Column="1" Grid.Row="1" Width="70" Height="20" IsEnabled="False" Margin="90,28.6,233.6,13.8" VerticalAlignment="Center"/>
+        <TextBlock Text=":שם משפחה" Grid.Column="1" Grid.Row="1" Margin="163.2,33.6,166.6,10.8" VerticalAlignment="Center" RenderTransformOrigin="1.463,0.521" Height="18">
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.204"/>
+                    <TranslateTransform X="0.001" Y="-0.231"/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+        <TextBox Name="privateName" LostFocus="PrivateName_LostFocus" Grid.Column="1" Grid.Row="1" Width="70" Height="20" IsEnabled="False" Margin="231.2,28.6,95.6,13.8" VerticalAlignment="Center"/>
+        <TextBlock Text=":שם" Grid.Column="1" Grid.Row="1" Margin="306.2,33.6,62.6,9.8" VerticalAlignment="Center" Height="19" RenderTransformOrigin="2.83,0.475" />
+
+
+
+        <TextBox Name="fhoneNumber" LostFocus="FhoneNumber_LostFocus" Grid.Column="1" Grid.Row="2" Width="70" Height="20" IsEnabled="False" Margin="91.2,25.2,235.6,17.2" VerticalAlignment="Center" RenderTransformOrigin="-0.589,0.473"/>
+        <TextBlock Text=":טלפון" Grid.Column="1" Grid.Row="2" Margin="166.2,27.2,188.6,20.2" RenderTransformOrigin="3.631,0.934" />
+        <TextBox Name="id" LostFocus="Id_LostFocus" Grid.Column="1" Grid.Row="2" Width="70" Height="20" IsEnabled="False" Margin="236.6,28,100.6,16" VerticalAlignment="Center" RenderTransformOrigin="-0.589,0.473"/>
+        <TextBlock Text=":.ת.ז" Grid.Row="2" Margin="309.6,31,69.6,16" RenderTransformOrigin="3.631,0.934" Grid.Column="1" />
+        <TextBox Name="email" LostFocus="Email_LostFocus" Grid.Column="1" Grid.Row="3" Width="70" Height="20" IsEnabled="False" Margin="234.6,8,102.6,8" VerticalAlignment="Center" RenderTransformOrigin="0.984,0.509"/>
+        <TextBlock  Text=":מייל" Grid.Column="1" Grid.Row="3" Margin="309.6,13,45.6,5" VerticalAlignment="Center" Height="18" RenderTransformOrigin="0.018,0.573"/>
+
+        <TextBlock Grid.Column="1" Grid.Row="4" Text=":פרטי חשבון" HorizontalAlignment="Right" Margin="0,6,45.6,42" />
+        <TextBox Name="bankName" LostFocus="BankName_LostFocus" Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="235.6,33,101.6,11" RenderTransformOrigin="0.516,-0.018"/>
+        <Label Content=":שם בנק" Grid.Row="4" Margin="301.6,33,25.6,0" Grid.Column="1" Height="26" VerticalAlignment="Top"/>
+        <TextBox Name="bankNumber" LostFocus="BankNumber_LostFocus" Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="96.6,33,240.6,11" RenderTransformOrigin="0.867,0.382"/>
+        <Label  Content=":מספר בנק" Grid.Column="1" Grid.Row="4" Margin="166.6,32,166.6,6"/>
+
+        
+
+        <TextBox Name="brunchNumber" LostFocus="BrunchNumber_LostFocus" Grid.Column="1"
+                     Grid.Row="6"
+                         Width="70"
+                        Height="20" IsEnabled="False" Margin="234.6,19,102.6,25"/>
+        <Label Grid.Column="1"
+                           Grid.Row="6"
+                      Content=":מס חשבון" Margin="0,19,169.6,19" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
+        <TextBox Name="BankAccountNumber" LostFocus="BankAccountNumber_LostFocus" Grid.Column="1"
+                     Grid.Row="6"
+                         Width="70"
+                        Height="20" IsEnabled="False" Margin="97.6,19,239.6,25"/>
+        <Label Grid.Column="1"
+                           Grid.Row="6"
+                      Content=":מספר סניף" Margin="0,19,31.6,19" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
+
+        <Label Grid.Column="0" Grid.Row="0" Content=":פרטי יחידה"  HorizontalAlignment="Right" Margin="0,3,9.8,36.4" />
+
+
+        <TextBox x:Name="prise" LostFocus="Prise_LostFocus" Grid.Column="0"  Grid.Row="1" Width="70" Height="20" IsEnabled="False" Margin="244,28.6,82.8,13.8" RenderTransformOrigin="0.945,0.643"/>
+        <Label Content=":מחיר" Grid.Column="0"  Grid.Row="1" Margin="317,28.6,37.8,9.8"/>
+        <ComboBox x:Name="Type" LostFocus="Type_LostFocus" Width="70" Grid.Column="0"  Grid.Row="1" Height="20" IsEnabled="False" Margin="65,28.6,261.8,13.8">
+            <ComboBoxItem Content="צימר" x:Name="Zimmer" />
+            <ComboBoxItem Content="מלון" x:Name="Hotel" />
+            <ComboBoxItem Content="לינת שטח" x:Name="Camping" />
+            <ComboBoxItem Content="וילה" x:Name="Vila" />
+            <ComboBoxItem Content="סאבלט" x:Name="Subleate" />
+        </ComboBox>
+
+
+        <TextBlock Text=":סוג" Margin="140,32.6,226.8,13.8" Grid.Row="1"/>
+        <TextBox Name="adress" LostFocus="Adress_LostFocus" Grid.Column="0" Grid.Row="2" Width="70" Height="20" IsEnabled="False" Margin="65,25.2,261.8,17.2"/>
+        <TextBlock Text=":כתובת" Grid.Column="0" Grid.Row="2" Margin="140,29.2,212.8,16.2"/>
+        <TextBox Name="city" LostFocus="City_LostFocus" Grid.Column="0" Grid.Row="2" Width="70" Height="20" IsEnabled="False" Margin="244,25.2,82.8,17.2"/>
+        <TextBlock Text=":עיר" Grid.Column="0" Grid.Row="2" Margin="319,27.2,30.8,18.2"/>
+
+        <Label Content=":רמת פנסיון" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Margin="0,5,20.4,58" Grid.RowSpan="2"/>
+
+        <ComboBox x:Name="pension" LostFocus="Pension_LostFocus" Grid.Column="0" Grid.Row="3" Height="20" Width="70" IsEnabled="False" HorizontalAlignment="Right" Margin="0,5,87.4,11">
+            <ComboBoxItem Content="בלי ארוחות"/>
+            <ComboBoxItem Content="חצי פנסיון"/>
+            <ComboBoxItem Content="פנסיון מלא"/>
+        </ComboBox>
+
+        <Label Content=":איזור" Grid.Column="0" Grid.Row="3" Margin="145,8,186.4,0" Height="28" VerticalAlignment="Top" RenderTransformOrigin="0.033,0.472"/>
+        <ComboBox x:Name="Area" LostFocus="Area_LostFocus" Grid.Column="0" Grid.Row="3" Height="20" Width="70" IsEnabled="False" HorizontalAlignment="Left" Margin="70,8,0,8">
+            <ComboBoxItem Content="צפון"/>
+            <ComboBoxItem Content="דרום"/>
+            <ComboBoxItem Content="מרכז"/>
+            <ComboBoxItem Content="ירושלים"/>
+        </ComboBox>
+        <TextBox Name="BranchAddress" LostFocus="BranchAddress_LostFocus" Grid.Column="1" Grid.Row="5" Width="70" Height="20" IsEnabled="False" Margin="96.6,24,240.6,20" RenderTransformOrigin="0.543,-0.245"/>
+        <TextBlock Text=":כתובת"  Grid.Column="1" Grid.Row="5" Margin="171.6,25,180.6,20"/>
+        <TextBox Name="BranchCity" LostFocus="BranchCity_LostFocus" Grid.Column="1" Grid.Row="5" Width="70" Height="20" IsEnabled="False" Margin="236.6,24,100.6,20"/>
+        <TextBlock Text=":עיר" Grid.Column="1" Grid.Row="5" Margin="309.6,25,57.6,20"/>
+
+        <TextBox Name="chilldren" LostFocus="Chilldren_LostFocus" IsEnabled="False" Height="20" Width="20" Grid.Row="4" Margin="-10,15,105,0" />
+        <Label Content=":מספר מבוגרים" Grid.Column="0" Grid.Row="4" Margin="300,25,9.4,11" />
+        <Label Content=":מספר ילדים" Grid.Column="0" Grid.Row="4" Margin="150,25,186.4,11"/>
+        <TextBox Name="adults" LostFocus="Adults_LostFocus" Height="20" Width="20" Grid.Column="0" Grid.Row="4" IsEnabled="False" Margin="175,15,0,0"/>
+        <WrapPanel Grid.Column="0" Grid.Row="6"  >
+            <Button Name="delete" Content="מחיקה" Click="Delete_Click" Height="30" Width="70" IsEnabled="False" Margin="50,20,0,0"/>
+            <Button Name="add" Content="הוספה" Click="Add_Click" Height="30" Width="70" IsEnabled="False" Margin="10,20,0,0"/>
+            <Button Name="update" Content="עידכון" Click="Update_Click" Height="30" Width="70" IsEnabled="False" Margin="10,20,0,0" />
+            <Button Name="clear" Content="ניקוי" Click="Clear_Click" Height="30" Width="70" Margin="10,20,0,0"/>
+        </WrapPanel>
+        <CheckBox Name="spa" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Right" Margin="0,10,50.4,31" Content="ספא" Width="53"/>
+        <CheckBox Name="flatTv" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,50,10" Content="פלזמה"/>
+        <CheckBox Name="airCondition" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Center" Margin="227,10,127.4,31" Content="מיזוג" Width="52"/>
+        <CheckBox Name="Pool" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="100,0,0,10" Content="בריכה"/>
+        <CheckBox Name="Jacuzzy" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Left" Margin="150,10,0,0" Content="ג'קוזי"/>
+        <CheckBox Name="Garden" Grid.Row="5" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="150,0,0,10" Content="גינה"/>
+        <CheckBox Name="ChilldrensAttractions" Grid.Row="5" IsEnabled="False"  HorizontalAlignment="Left" Margin="25,10,0,0" Content="אטרקציות לילדים"/>
+    </Grid>
+</Window>
