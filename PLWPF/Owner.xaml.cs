@@ -104,6 +104,7 @@ namespace PLWPF
             {
                 ListOfGuestRequest.Opacity = 0;
                 noData.Visibility = Visibility.Visible;
+
             }
         }
     }

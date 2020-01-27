@@ -101,8 +101,7 @@ namespace BL
             var hostingUnitList = from item in GetAllHostingUnits()
                                   where wantFilter(guestrequest, item).All(f => f(guestrequest, item)) && checkDates(guestrequest, item)
                                   select item;
-            /*if (!hostingUnitList.Any())
-                throw new OurException();*/
+            
             return hostingUnitList.ToList();
         }
 
@@ -136,6 +135,8 @@ namespace BL
                 if (checkGuestRequestDetails(g))
                 {
                     List<HostingUnit> listHostings = suitble(g);
+                    if (!listHostings.Any())
+                        throw new OurException("אין יחידת אירוח מתאימה");
                     g = dal.addGuestRequest(g.Copy());
                     addOrder(g, listHostings);
                 }
@@ -267,9 +268,9 @@ namespace BL
                     dal.updateOrder(item.Copy());
                 }
             }
-            catch (OurException ex)
+            catch (OurException)
             {
-                throw ex;
+                throw new OurException();
             }
         }
 

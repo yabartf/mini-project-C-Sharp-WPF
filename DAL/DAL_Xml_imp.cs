@@ -60,43 +60,14 @@ namespace DAL
                 configRoot = XElement.Load(configPath);
                 updateCofingortion();
             }
-            //if (!File.Exists(hostingUnitsPath))
-            //{
-            //    FileStream fileStream = new FileStream(hostingUnitsPath, FileMode.Create);
-            //    fileStream.Close();
-            //}
-            //else
-            //{
-            //    DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
-            //}
-            //if (!File.Exists(GuestRequestsPath))
-            //{
-            //    FileStream fileStream = new FileStream(GuestRequestsPath, FileMode.Create);
-            //    fileStream.Close();
-            //}
-            //else
-            //{
-            //    DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
-            //}
-
+            
             new Thread(downloadBanks).Start();
 
         }
-        private void updateCofingortion()
-        {
-            Configuration.hostingUnitKey = int.Parse(configRoot.Element("hostingUnitKey").Value);
-
-            Configuration.GuestRequestKey = int.Parse(configRoot.Element("GuestRequestKey").Value);
-
-            Configuration.OrderKey = int.Parse(configRoot.Element("OrderKey").Value);
-
-            Configuration.commissionFee = int.Parse(configRoot.Element("commissionFee").Value);
-
-        }
-
-
+        #region Order Functions.
         public void addOrder(GuestRequest g, List<HostingUnit> suites)
         {
+            
             foreach (var item in suites)
             {
                 Order ord = new Order();
@@ -137,79 +108,14 @@ namespace DAL
             catch (OurException)
             {
 
-                throw new OurException("not found order");
+                throw new OurException("the order not found");
             }
 
         }
 
-        public static void saveListToXML<T>(List<T> list, string Path)
-        {
-            FileStream file = new FileStream(Path, FileMode.Create);
-            XmlSerializer x = new XmlSerializer(list.GetType());
-            x.Serialize(file, list);
-            file.Close();
-        }
+        #endregion
 
-        private static List<T> loadListFromXML<T>(string path)
-        {
-            if (File.Exists(path))
-            {
-                List<T> list;
-                XmlSerializer x = new XmlSerializer(typeof(List<T>));
-                FileStream file = new FileStream(path, FileMode.Open);
-                list = (List<T>)x.Deserialize(file);
-                file.Close();
-                return list;
-            }
-            else return new List<T>();
-        }
-
-        public GuestRequest addGuestRequest(GuestRequest g)
-        {
-            try
-            {
-                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
-                foreach (var item in DataSource.allGuests)
-                {
-                    if (g == item)
-                    {
-                        throw new OurException("this guest request is all ready in exist.");
-                    }
-                }
-                g.GuestRequestKey = Configuration.GuestRequestKey++;
-                configRoot.Element("GuestRequestKey").Value = "" + Configuration.GuestRequestKey;
-                DataSource.allGuests.Add(g);
-                saveListToXML(DataSource.allGuests, GuestRequestsPath);
-                return g.Copy();
-            }
-            catch (OurException ex)
-            {
-                throw ex;
-            }
-        }
-
-        public void updateGuestRequest(GuestRequest guestrequest)
-        {
-            try
-            {
-                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
-                foreach (var item in DataSource.allGuests)
-                    if (guestrequest == item)
-                    {
-                        DataSource.allGuests.Remove(item);
-                        DataSource.allGuests.Add(guestrequest);
-                        saveListToXML(DataSource.allGuests, GuestRequestsPath);
-                        return;
-                    }
-                throw new OurException();
-            }
-            catch (OurException)
-            {
-                throw new OurException("this guest request not found");
-            }
-
-        }
-
+        #region Hosting unit Funcions.
         public void addHostingUnit(HostingUnit hu)
         {
             try
@@ -284,13 +190,96 @@ namespace DAL
             }
 
         }
-        public bool noOrders(HostingUnit hu)
+
+        #endregion
+
+        #region Guest requests Functions.
+        public GuestRequest addGuestRequest(GuestRequest g)
         {
-            if (!hu.orders.Any())
-                return true;
-            return false;
+            try
+            {
+                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
+                foreach (var item in DataSource.allGuests)
+                {
+                    if (g == item)
+                    {
+                        throw new OurException("this guest request is all ready in exist.");
+                    }
+                }
+                g.GuestRequestKey = Configuration.GuestRequestKey++;
+                configRoot.Element("GuestRequestKey").Value = "" + Configuration.GuestRequestKey;
+                DataSource.allGuests.Add(g);
+                saveListToXML(DataSource.allGuests, GuestRequestsPath);
+                return g.Copy();
+            }
+            catch (OurException ex)
+            {
+                throw ex;
+            }
         }
 
+        public void updateGuestRequest(GuestRequest guestrequest)
+        {
+            try
+            {
+                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
+                foreach (var item in DataSource.allGuests)
+                    if (guestrequest == item)
+                    {
+                        DataSource.allGuests.Remove(item);
+                        DataSource.allGuests.Add(guestrequest);
+                        saveListToXML(DataSource.allGuests, GuestRequestsPath);
+                        return;
+                    }
+                throw new OurException();
+            }
+            catch (OurException)
+            {
+                throw new OurException("this guest request not found");
+            }
+
+        }
+
+
+        #endregion
+
+
+        private void updateCofingortion()
+        {
+            Configuration.hostingUnitKey = int.Parse(configRoot.Element("hostingUnitKey").Value);
+
+            Configuration.GuestRequestKey = int.Parse(configRoot.Element("GuestRequestKey").Value);
+
+            Configuration.OrderKey = int.Parse(configRoot.Element("OrderKey").Value);
+
+            Configuration.commissionFee = int.Parse(configRoot.Element("commissionFee").Value);
+
+        }
+
+
+       
+        public static void saveListToXML<T>(List<T> list, string Path)
+        {
+            FileStream file = new FileStream(Path, FileMode.Create);
+            XmlSerializer x = new XmlSerializer(list.GetType());
+            x.Serialize(file, list);
+            file.Close();
+        }
+
+        private static List<T> loadListFromXML<T>(string path)
+        {
+            if (File.Exists(path))
+            {
+                List<T> list;
+                XmlSerializer x = new XmlSerializer(typeof(List<T>));
+                FileStream file = new FileStream(path, FileMode.Open);
+                list = (List<T>)x.Deserialize(file);
+                file.Close();
+                return list;
+            }
+            else return new List<T>();
+        }
+              
         public List<HostingUnit> GetAllHostingUnits()
         {
             DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
@@ -415,7 +404,7 @@ namespace DAL
             WebClient wc = new WebClient();
             try
             {
-                string xmlServerPath = @"http://www.boi.org.il/he/BankingSupervision/BanksAndBranchLocations/Lists/BoiBankBranchesDocs/atm.xml";
+                string xmlServerPath = @"https://www.boi.org.il/he/BankingSupervision/BanksAndBranchLocations/Lists/BoiBankBranchesDocs/atm.xml";
                 wc.DownloadFile(xmlServerPath, xmlLocalPath);
                 XElement banksXml = new XElement(xmlLocalPath);
                 foreach (var item in banksXml.Elements())
@@ -431,7 +420,7 @@ namespace DAL
             }
             catch (Exception)
             {
-                string xmlServerPath = @"http://www.jct.ac.il/~coshri/atm.xml";
+                string xmlServerPath = @"https://www.jct.ac.il/~coshri/atm.xml";
                 wc.DownloadFile(xmlServerPath, xmlLocalPath);
             }
             finally

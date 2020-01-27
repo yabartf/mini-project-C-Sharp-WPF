@@ -37,9 +37,16 @@ namespace PLWPF
                     list.Add(hosting);
                 }
             }
-            ListOfGuestRequest.Opacity = list.Any() ? 1 : 0;
+            if (list.Any())
+                ListOfGuestRequest.Opacity = 1;
+            else
+            {
+                ListOfGuestRequest.Opacity = 0;
+                MessageBox.Show("אין נתונים להצגה");                
+            }
             DataContext = list;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            
         }
 
 

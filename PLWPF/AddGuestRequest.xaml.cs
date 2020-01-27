@@ -252,8 +252,7 @@ namespace PLWPF
             }
             catch (OurException ex)
             {
-                message.Text = ex.Message;
-                message.Visibility = Visibility.Visible;
+                MessageBox.Show(ex.Message);
                 NoProblem = false;
             }
         }

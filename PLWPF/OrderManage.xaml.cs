@@ -82,6 +82,8 @@ namespace PLWPF
                 i++;
                 WindowOfOrder.Opacity = 1;
             }
+            if (!CurntHostingUnit.orders.Any())
+                MessageBox.Show("אין נתונים להצגה");
         }
         private void OrderChoosed(object sender, RoutedEventArgs e)
         {
@@ -108,7 +110,7 @@ namespace PLWPF
             }
             catch (OurException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("יש בעיה בהזמנה");                
             }
         }
 
