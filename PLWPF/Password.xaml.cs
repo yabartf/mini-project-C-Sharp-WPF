@@ -15,26 +15,24 @@ using System.Windows.Shapes;
 namespace PLWPF
 {
     /// <summary>
-    /// Interaction logic for OwnerWindow.xaml
+    /// Interaction logic for Password.xaml
     /// </summary>
-    public partial class OwnerWindow : Window
+    public partial class Password : Window
     {
-        public OwnerWindow()
+        public Password()
         {
             InitializeComponent();
+            //PasswordBox.Password = "1234";
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        private void ToOwner(object sender, RoutedEventArgs e)
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            Owner NewWindow = new Owner();
-            NewWindow.ShowDialog();
-        }
-
-        private void ToHostings(object sender, RoutedEventArgs e)
-        {
-            AllHostingUnit allHostingUnitWindow = new AllHostingUnit();
-            allHostingUnitWindow.ShowDialog();
+            if (PasswordBox.Password == "1234")
+            {
+                MainWindow.PasTrue = true;
+                Close();
+            }
         }
     }
 }

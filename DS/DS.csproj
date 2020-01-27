@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D6CF486-4854-45B0-B0A5-4899DA8F7641}</ProjectGuid>
+    <ProjectGuid>{9096FDE8-663E-4E05-A28B-2C8E183AD9FB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DS</RootNamespace>
@@ -41,13 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cloning.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj">
-      <Project>{a085fab9-fd6c-4919-84dc-8cf711c4f2a9}</Project>
+      <Project>{77389a87-1774-4d7b-8eed-1ec29a7bfe96}</Project>
       <Name>BE</Name>
     </ProjectReference>
   </ItemGroup>

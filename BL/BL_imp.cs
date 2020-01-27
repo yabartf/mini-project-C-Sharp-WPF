@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BE;
 using DAL;
@@ -12,12 +13,35 @@ namespace BL
 {
     public class BL_imp : IBL
     {
-        DAL_imp dal = DAL_imp.GetDal();
+        DAL_Xml_imp dal = DAL_Xml_imp.getDal_XML();
         private static BL_imp bl = null;
+        public delegate void threadstart();
+
+        Thread UpdateOrders;
+        public void UpdateAllOrders()
+        {
+            DateTime d = DateTime.Now;
+            d = d.AddDays(-30);
+            foreach (var item in getAllOrder())
+            {
+                if (item.OrderDate.AddDays(30) < DateTime.Now && item.status == (int)Status.SentMail)
+                {
+                    item.status = (int)Status.Faild;
+                    updateOrder(item);
+                }
+            }
+            foreach (var item in GetAllHostingUnits())
+            {
+                item.Diary[d.Month, d.Day] = false;
+                updateHostingUnit(item);
+            }
+            Thread.Sleep(86400000);
+        }
 
         private BL_imp()
         {
-          dal.restartLists();
+            //  dal.restartLists();            
+            new Thread(UpdateAllOrders);
         }
 
         public static BL_imp getBl()
@@ -54,13 +78,13 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
         public bool craditAuthorization(Host h, Order order)
         {
             if (h.CollectionClearance)
             {
-                order.status = (int) Status.SentMail;
+                order.status = (int)Status.SentMail;
                 return true;
             }
             return false;
@@ -75,8 +99,8 @@ namespace BL
         {
             HostingUnit hostingunit = new HostingUnit();
             var hostingUnitList = from item in GetAllHostingUnits()
-                where wantFilter(guestrequest, item).All(f => f(guestrequest, item)) && checkDates(guestrequest, item)
-                select item;
+                                  where wantFilter(guestrequest, item).All(f => f(guestrequest, item)) && checkDates(guestrequest, item)
+                                  select item;
             /*if (!hostingUnitList.Any())
                 throw new OurException();*/
             return hostingUnitList.ToList();
@@ -109,7 +133,7 @@ namespace BL
         {
             try
             {
-                if(checkGuestRequestDetails(g))
+                if (checkGuestRequestDetails(g))
                 {
                     List<HostingUnit> listHostings = suitble(g);
                     g = dal.addGuestRequest(g.Copy());
@@ -119,12 +143,12 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public void addHostingUnit(HostingUnit hu)
         {
-            
+
             try
             {
                 checkHostingUnitDetails(hu);
@@ -133,10 +157,10 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
-        
-        
+
+
         public List<BankBranch> GetAllBankBranch()
         {
             return dal.GetAllBankBranch();
@@ -155,7 +179,7 @@ namespace BL
             }
 
         }
-        
+
 
         public List<HostingUnit> GetAllHostingUnits()
         {
@@ -195,7 +219,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public void updateHostingUnit(HostingUnit hu)
@@ -208,7 +232,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
         /// <summary>
         /// check if the dates of guest rquests is commons
@@ -239,21 +263,21 @@ namespace BL
                                   select item;
                 foreach (var item in faild_order)
                 {
-                    item.status =(int)Status.Faild;
+                    item.status = (int)Status.Faild;
                     dal.updateOrder(item.Copy());
                 }
             }
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public void addHostingUnit()
         {
             throw new NotImplementedException();
         }
-        public IEnumerable< GuestRequest> li()
+        public IEnumerable<GuestRequest> li()
         {
             var list = from x in dal.getAllGuests()
                        where x.Area == (int)Area.Jerusalem
@@ -267,11 +291,11 @@ namespace BL
             return gr;
         }
 
-        public Dictionary<int,List<GuestRequest>> groupGuestRequestByNumOfVacationer()
+        public Dictionary<int, List<GuestRequest>> groupGuestRequestByNumOfVacationer()
         {
             var gr = dal.getAllGuests().GroupBy(s => (s.Children + s.Adults))
                 .OrderBy(x => x.Key)
-                .ToDictionary(x => x.Key, x => x.ToList());        
+                .ToDictionary(x => x.Key, x => x.ToList());
             return gr;
         }
         public List<Host> groupOwnersBYNumOfHostingUnit()
@@ -281,10 +305,10 @@ namespace BL
             return owners.Select(x => x.Key).ToList();
         }
 
-        public Dictionary<int,List< HostingUnit>> groupHostingUnitByArea()
+        public Dictionary<int, List<HostingUnit>> groupHostingUnitByArea()
         {
 
-            var hostingUnitByArea= dal.GetAllHostingUnits().GroupBy(s => s.area).ToDictionary(x => x.Key, x => x.ToList());
+            var hostingUnitByArea = dal.GetAllHostingUnits().GroupBy(s => s.area).ToDictionary(x => x.Key, x => x.ToList());
             return hostingUnitByArea;
         }
 
@@ -299,7 +323,7 @@ namespace BL
                 from Order res in all
                 where res.status == (int)Status.NotAddressed
                 select res;
-            return (List<Order>) result.Copy();
+            return (List<Order>)result.Copy();
         }
         public List<HostingUnit> hostingUnitsByArea(int selectedArea)
         {
@@ -328,37 +352,37 @@ namespace BL
             Filter.Add((GuestRequest, HostingUnit) => hostingunit.Meals >= guestrequest.Meals);
             Filter.Add((GuestRequest, HostingUnit) =>
                 guestrequest.Area == 1 ? true : guestrequest.Area == hostingunit.area);
-            if (guestrequest.spa == (int) Necessity.Interested)
+            if (guestrequest.spa == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.spa);
-            else if (guestrequest.spa == (int) Necessity.NotInterested)
+            else if (guestrequest.spa == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.spa);
-            if (guestrequest.airCondition == (int) Necessity.Interested)
+            if (guestrequest.airCondition == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.airCondition);
-            else if (guestrequest.airCondition == (int) Necessity.NotInterested)
+            else if (guestrequest.airCondition == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.airCondition);
-            if (guestrequest.ChildrensAttractions == (int) Necessity.Interested)
+            if (guestrequest.ChildrensAttractions == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.ChilldrensAttractions);
-            else if (guestrequest.ChildrensAttractions == (int) Necessity.NotInterested)
+            else if (guestrequest.ChildrensAttractions == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.ChilldrensAttractions);
-            if (guestrequest.flatTv == (int) Necessity.Interested)
+            if (guestrequest.flatTv == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.flatTv);
-            else if (guestrequest.flatTv == (int) Necessity.NotInterested)
+            else if (guestrequest.flatTv == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.flatTv);
-            if (guestrequest.Garden == (int) Necessity.Interested)
+            if (guestrequest.Garden == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.Garden);
-            else if (guestrequest.Garden == (int) Necessity.NotInterested)
+            else if (guestrequest.Garden == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.Garden);
-            if (guestrequest.Jacuzzy == (int) Necessity.Interested)
+            if (guestrequest.Jacuzzy == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.Jacuzzy);
-            else if (guestrequest.Jacuzzy == (int) Necessity.NotInterested)
+            else if (guestrequest.Jacuzzy == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.Jacuzzy);
-            if (guestrequest.Pool == (int) Necessity.Interested)
+            if (guestrequest.Pool == (int)Necessity.Interested)
                 Filter.Add((GuestRequest, HostingUnit) => hostingunit.Pool);
-            else if (guestrequest.Pool == (int) Necessity.NotInterested)
+            else if (guestrequest.Pool == (int)Necessity.NotInterested)
                 Filter.Add((GuestRequest, HostingUnit) => !hostingunit.Pool);
             return Filter;
         }
-        
+
         public bool deleteHostingUnit(int inputKey)
         {
             try
@@ -374,7 +398,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public List<HostingUnit> ownersHostingUnits(int id)
@@ -391,7 +415,7 @@ namespace BL
             catch (Exception ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public HostingUnit hostingUnitByOrder(Order order)
@@ -408,7 +432,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public GuestRequest guestRequestByOrder(Order order)
@@ -425,7 +449,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
         public HostingUnit TheHostingUnitByKey(int key)
         {
@@ -441,7 +465,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }         
+            }
         }
         public HostingUnit TheHostingUnitByName(string name)
         {
@@ -457,7 +481,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
         public HostingUnit hostingUnitExist(object key)
         {
@@ -468,7 +492,7 @@ namespace BL
             catch (OurException ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public void addOrder(GuestRequest g, List<HostingUnit> hu)
@@ -485,18 +509,19 @@ namespace BL
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
             if (hostingUnit.Type < 1 || hostingUnit.Type > 5)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (hostingUnit.Meals !=0 && hostingUnit.Meals != 2&& hostingUnit.Meals != 3)
+            if (hostingUnit.Meals != 0 && hostingUnit.Meals != 2 && hostingUnit.Meals != 3)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
             if (hostingUnit.pricePerNight <= 0)
                 throw new OurException("מחיר חייב להיות גדול מ0");
             if (!checkFhoneNumber(hostingUnit.Owner.FhoneNumber))
                 throw new OurException("מספר טלפון לא תקין");
-            if(!checkName(hostingUnit.Owner.PrivateName)||!checkName(hostingUnit.Owner.FamilyName))
+            if (!checkName(hostingUnit.Owner.PrivateName) || !checkName(hostingUnit.Owner.FamilyName))
                 throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
             if (!checkName(hostingUnit.city))
                 throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
-            if(!checkName(hostingUnit.Owner.BankBranchDetails.BranchCity))
+            if (!checkName(hostingUnit.Owner.BankBranchDetails.BranchCity))
                 throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
+            //checkBankDitails(hostingUnit);
             return true;
         }
         private bool checkFhoneNumber(int fNumber)
@@ -510,7 +535,7 @@ namespace BL
         {
             for (int i = 0; i < name.Length; i++)
             {
-                if ((name[i] > 122 || name[i] < 65) ||( name[i] > 90 && name[i] < 97))
+                if ((name[i] > 122 || name[i] < 65) || (name[i] > 90 && name[i] < 97))
                     return false;
             }
             return true;
@@ -518,31 +543,37 @@ namespace BL
         private bool checkGuestRequestDetails(GuestRequest guestRequest)
         {
             legitDates(guestRequest);
-            checkNecessityEnum(guestRequest.Children, guestRequest.Adults);
+            if (guestRequest.Children < 0 || guestRequest.Adults < 0)
+                throw new OurException("מספר מבוגרים וילדים לא יכול להיות שלילי");
             if (guestRequest.Children == 0 && guestRequest.Adults == 0)
                 throw new OurException("מספר הנופשים חייב להיות גדול מ0");
-            checkNecessityEnum(guestRequest.airCondition, guestRequest.airCondition);
+            checkNecessityEnum(guestRequest.airCondition);
             if (guestRequest.Area < 1 || guestRequest.Area > 5)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            checkNecessityEnum(guestRequest.ChildrensAttractions, guestRequest.ChildrensAttractions);
-            checkNecessityEnum(guestRequest.flatTv, guestRequest.flatTv);
-            checkNecessityEnum(guestRequest.Jacuzzy, guestRequest.Jacuzzy);
-            checkNecessityEnum(guestRequest.Pool, guestRequest.Pool);
-            checkNecessityEnum(guestRequest.Garden, guestRequest.Garden);
-            checkNecessityEnum(guestRequest.spa, guestRequest.spa);
-            if(guestRequest.status<1|| guestRequest.status>5)
+            checkNecessityEnum(guestRequest.ChildrensAttractions);
+            checkNecessityEnum(guestRequest.flatTv);
+            checkNecessityEnum(guestRequest.Jacuzzy);
+            checkNecessityEnum(guestRequest.Pool);
+            checkNecessityEnum(guestRequest.Garden);
+            checkNecessityEnum(guestRequest.spa);
+            if (guestRequest.status < 1 && guestRequest.status > 5)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (guestRequest.Type < 1 || guestRequest.Type > 5)
+            if (guestRequest.Type < 1 && guestRequest.Type > 5)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
             if (!checkName(guestRequest.PrivateName) || !checkName(guestRequest.FamilyName))
                 throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
             return true;
         }
-        private void checkNecessityEnum(int min,int max)
+        private void checkNecessityEnum(int neecessity)
         {
-            if (min < 1 || max > 3)
+            if (neecessity < 1 || neecessity > 3)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 3");
         }
+        //private void checkBankDitails(HostingUnit hostingUnit)//בדיקה של תנאי הבנק
+        //{
+        //    if(!dal.GetAllBankBranch().Exists(x=>x.BankNumber==hostingUnit.Owner.BankBranchDetails.BankNumber
+        //    &&x.BankName==hostingUnit.Owner.BankBranchDetails.BankName))
+        //}
     }
 }
 

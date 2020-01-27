@@ -8,25 +8,25 @@
         Title="ניהול הזמנות" Icon="http://media.mikmak.co.il/media/gallery/464/464307/main/464307_t649.jpg" Height="650" Width="1100"
         KeyDown="IsKey">
     <Window.Resources>
-       
-                <Style TargetType="Button">
-                    <Setter Property="Background" Value="Beige"/>
-                    <Setter Property="Foreground" Value="Brown"/>
-                    <Setter Property="FontSize" Value="18"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" Value="Aqua"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-        
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Beige"/>
+            <Setter Property="Foreground" Value="Brown"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="Aqua"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
 
     <Grid >
         <Grid.Background>
             <ImageBrush ImageSource="http://www.picshare.co.il/m_pictures/img162425.jpg" Stretch="UniformToFill"/>
         </Grid.Background>
-        
+
         <Label Content=" הכנס מספר יחידת אירוח או שם יחידה" Foreground="GreenYellow" FontSize="16" HorizontalAlignment="Stretch" Margin="765,42,40.333,0" VerticalAlignment="Top" RenderTransformOrigin="1.699,-0.703" Height="35"/>
         <TextBox  Name="HostingKey" FontSize="23" HorizontalAlignment="Stretch" Height="34" Margin="640,42,333.333,0" TextWrapping="Wrap" Background="Beige" VerticalAlignment="Top" Width="120" />
         <Button IsEnabled="{Binding ElementName=HostingKey, Path=SelectedText}" Name="EnterHosting" FontSize="18" Content="אישור" HorizontalAlignment="Left" Margin="449,42,0,0" Background="Beige" Foreground="Brown" VerticalAlignment="Top" Width="126"  Height="34" Click="EnterHostingClick"/>

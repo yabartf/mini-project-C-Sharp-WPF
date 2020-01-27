@@ -16,12 +16,13 @@
         </Style>
     </Window.Resources>
     <Grid Height="621" Margin="0,0,0.333,-0.333" VerticalAlignment="Bottom">
-            <Grid.Background>
-                <ImageBrush ImageSource="http://www.ykdesign.co.il/files/articles/item/thumbsrc/%D7%9E%D7%A9%D7%A8%D7%93__1_.jpg" Stretch="UniformToFill"/>
-            </Grid.Background>
-            <ListBox Name="ListOfGuestRequest"   ItemsSource="{Binding}"  HorizontalAlignment="Stretch"  FontStretch="Expanded" Foreground="Brown" Background="Beige"   Margin="48,192,37,0" VerticalAlignment="Top" FontFamily="Yu Gothic UI Semibold" FontSize="16" />
-            <Button Content="איזור" Click="ByArea"  HorizontalAlignment="Stretch" Margin="158.333,131,0,0" VerticalAlignment="Top"/>
-            <Button Content="מספר נופשים" Click="ByVacationer"   Margin="471,131,522,0" VerticalAlignment="Top"/>
-        </Grid>
-    
+        <Grid.Background>
+            <ImageBrush ImageSource="http://www.ykdesign.co.il/files/articles/item/thumbsrc/%D7%9E%D7%A9%D7%A8%D7%93__1_.jpg" Stretch="UniformToFill"/>
+        </Grid.Background>
+        <ListBox Name="ListOfGuestRequest"   ItemsSource="{Binding}"  HorizontalAlignment="Stretch"  FontStretch="Expanded" Foreground="Brown" Background="Beige"   Margin="48,192,37,0" VerticalAlignment="Top" FontFamily="Yu Gothic UI Semibold" FontSize="16" />
+        <Button Content="איזור" Click="ByArea"  HorizontalAlignment="Stretch" Margin="158.333,131,0,0" VerticalAlignment="Top"/>
+        <Button Content="מספר נופשים" Click="ByVacationer"   Margin="471,131,522,0" VerticalAlignment="Top"/>
+        <Label Name="noData" Content="אין נתונים להצגה" Width="250" Height="50" FontSize="30" Foreground="Brown" Visibility="Collapsed"  Margin="373,210,470.267,361"  />
+    </Grid>
+
 </Window>

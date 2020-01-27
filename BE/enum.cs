@@ -8,26 +8,26 @@ namespace BE
 {
     public enum Area
     {
-        All=1,North,South,Center,Jerusalem
+        All = 1, North, South, Center, Jerusalem
     };
     public enum Type
     {
-        Zimmer=1, Hotel, Camping, Vila,Subleate
+        Zimmer = 1, Hotel, Camping, Vila, Subleate
     };
     public enum Necessity
     {
-        Interested = 1,Possible, NotInterested
+        Interested = 1, Possible, NotInterested
     };
     public enum Status
     {
-        Complate=1, Faild, NotAddressed, SentMail 
+        Complate = 1, Faild, NotAddressed, SentMail
     }
     public enum Meals
     {
-        NoMeals, HulfPension=2, FullPension
+        NoMeals, HulfPension = 2, FullPension
     }
     public enum ChildrensAttractions
     {
-        Interested=1, Possible, NotInterested
+        Interested = 1, Possible, NotInterested
     };
 }

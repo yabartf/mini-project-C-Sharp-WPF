@@ -44,13 +44,15 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>                <TextBlock Grid.Column="0" Text="   מחיר ללילה"/>                <TextBlock Grid.Column="1" Text="{Binding Path=pricePerNight }" />                <TextBlock Grid.Column="2" Text="   עיר"/>                <TextBlock Grid.Column="3" Text="{Binding Path= city}"/>                <TextBlock Grid.Column="4" Text="שם יחידה    "/>                <TextBlock Grid.Column="5" Text="{Binding Path= HostingUnitName}"/>                <TextBlock Grid.Column="6" Text="   ספא"/>                <TextBlock Grid.Column="7" Text="{Binding Path=spa}"/>                <TextBlock Grid.Column="8" Text="טלוויזיה   "/>                <TextBlock Grid.Column="9" Text="{Binding Path=flatTv}"/>                <TextBlock Grid.Column="10" Text="מיזוג אוויר   "/>                <TextBlock Grid.Column="11" Text="{Binding Path=airCondition}"/>                <TextBlock Grid.Column="12" Text="  סוג"/>                <TextBlock Grid.Column="13" Text="{Binding Path=Type}"/>                <TextBlock Grid.Column="14" Text="  מבוגרים"/>                <TextBlock Grid.Column="15" Text="{Binding Path=Adults}"/>                <TextBlock Grid.Column="16" Text="  ילדים"/>                <TextBlock Grid.Column="17" Text="{Binding Path=chilldren}"/>                <TextBlock Grid.Column="18" Text="  בריכה"/>                <TextBlock Grid.Column="19" Text="{Binding Path=Pool}"/>            </Grid>
         </DataTemplate>
-        </Window.Resources>
+    </Window.Resources>
 
-        <Grid>
+    <Grid>
         <Grid.Background>
+
             <ImageBrush ImageSource="https://m.issta.co.il/resources/images/village/austria/annaberg/960X572/1.jpg"/>
         </Grid.Background>
         <ListBox Name="ListOfGuestRequest" ItemsSource="{Binding}" ItemTemplate="{StaticResource MyDataTemplate}" HorizontalAlignment="Stretch"  FontStretch="Expanded" Foreground="Brown" Background="Beige"   Margin="48,192,37,0" VerticalAlignment="Top" FontFamily="Yu Gothic UI Semibold" FontSize="13" />
 
     </Grid>
+
 </Window>

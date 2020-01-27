@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C2288475-28E5-4F6E-ABE5-792190EFA583}</ProjectGuid>
+    <ProjectGuid>{3A9AD961-D0B5-4F06-A684-FD8442116AFB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DAL</RootNamespace>
@@ -42,17 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cloning.cs" />
-    <Compile Include="DAL_imp.cs" />
+    <Compile Include="DAL_Xml_imp.cs" />
     <Compile Include="Idal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj">
-      <Project>{a085fab9-fd6c-4919-84dc-8cf711c4f2a9}</Project>
+      <Project>{77389a87-1774-4d7b-8eed-1ec29a7bfe96}</Project>
       <Name>BE</Name>
     </ProjectReference>
     <ProjectReference Include="..\DS\DS.csproj">
-      <Project>{3d6cf486-4854-45b0-b0a5-4899da8f7641}</Project>
+      <Project>{9096fde8-663e-4e05-a28b-2c8e183ad9fb}</Project>
       <Name>DS</Name>
     </ProjectReference>
   </ItemGroup>

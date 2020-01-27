@@ -20,17 +20,18 @@ namespace PLWPF
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
-    {       
+    {
+        static public bool PasTrue = false;
         public MainWindow()
         {
-            InitializeComponent();            
+            InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         private void AddGuestRequest_Click(object sender, RoutedEventArgs e)
         {
             AddGuestRequest adding = new AddGuestRequest();
-            adding.ShowDialog();           
-            
+            adding.ShowDialog();
         }
 
         private void HostingUnitManage_Click(object sender, RoutedEventArgs e)
@@ -43,14 +44,21 @@ namespace PLWPF
         private void OrderManage_Click(object sender, RoutedEventArgs e)
         {
             OrderManage orderManage = new OrderManage();
-            orderManage.ShowDialog();
-
+            Password pas = new Password();
+            pas.ShowDialog();
+            if (PasTrue)
+                orderManage.ShowDialog();
+            PasTrue = false;
         }
 
         private void owner(object sender, RoutedEventArgs e)
         {
             OwnerWindow window = new OwnerWindow();
-            window.ShowDialog();
+            Password pas = new Password();
+            pas.ShowDialog();
+            if (PasTrue)
+                window.ShowDialog();
+            PasTrue = false;
         }
     }
 }

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{70471301-F3D8-4465-89D7-9C3557DE41DE}</ProjectGuid>
+    <ProjectGuid>{2B087497-FCA0-4678-A0C2-9F50DFBA7EE8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PLWPF</RootNamespace>
     <AssemblyName>PLWPF</AssemblyName>
@@ -100,6 +100,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Password.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OrderManage.xaml.cs">
@@ -110,6 +114,9 @@
     </Compile>
     <Compile Include="OwnerWindow.xaml.cs">
       <DependentUpon>OwnerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Password.xaml.cs">
+      <DependentUpon>Password.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -138,11 +145,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj">
-      <Project>{a085fab9-fd6c-4919-84dc-8cf711c4f2a9}</Project>
+      <Project>{77389a87-1774-4d7b-8eed-1ec29a7bfe96}</Project>
       <Name>BE</Name>
     </ProjectReference>
     <ProjectReference Include="..\BL\BL.csproj">
-      <Project>{c06e18f3-d5ae-4252-9732-df98a663d878}</Project>
+      <Project>{df581b73-1884-4ad4-b40a-1388b9ceb6ac}</Project>
       <Name>BL</Name>
     </ProjectReference>
   </ItemGroup>

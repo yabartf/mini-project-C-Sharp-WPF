@@ -6,7 +6,7 @@ public class OurException : Exception
     public OurException() { }
     public OurException(string message) : base(message) { }
     public OurException(string message, Exception inner) : base(message, inner) { }
-    
+
     //protected OurException(
     //  System.Runtime.Serialization.SerializationInfo info,
     //  System.Runtime.Serialization.StreamingContext context) : base("info", context) { }

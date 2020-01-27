@@ -22,24 +22,25 @@ namespace PLWPF
     /// </summary>
     public partial class HostingUnitManage : Window
     {
-        BL.BL_imp bl = BL.BL_imp.getBl();
-        HostingUnit hostingunit=new HostingUnit();
+        BL_imp bl = BL_imp.getBl();
+        HostingUnit hostingunit = new HostingUnit();
         Host owner = new Host();
         BankBranch BankBranchDetails = new BankBranch();
         public HostingUnitManage()
         {
-            InitializeComponent();  
+            InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         private void AddOrUpdate_Click(object sender, RoutedEventArgs e)
         {
             int isInt;
-            object key=null;
-             
-                if (!string.IsNullOrWhiteSpace(hostingUnitName.Text))
-                    key = hostingUnitName.Text;
-                else if (!string.IsNullOrWhiteSpace(hostingUnitKey.Text)&&int.TryParse(hostingUnitKey.Text,out isInt))
-                    key = hostingUnitKey.Text;
+            object key = null;
+
+            if (!string.IsNullOrWhiteSpace(hostingUnitName.Text))
+                key = hostingUnitName.Text;
+            else if (!string.IsNullOrWhiteSpace(hostingUnitKey.Text) && int.TryParse(hostingUnitKey.Text, out isInt))
+                key = hostingUnitKey.Text;
             enableFields();
             if (bl.hostingUnitExist(key) != null)
             {
@@ -52,7 +53,7 @@ namespace PLWPF
             {
                 add.IsEnabled = true;
                 hostingUnitKey.Text = Configuration.hostingUnitKey.ToString();
-                
+
             }
         }
 
@@ -82,16 +83,16 @@ namespace PLWPF
                     hostingunit.Owner.BankBranchDetails = BankBranchDetails;
                     getCheckBoxes();
                     bl.addHostingUnit(hostingunit);
-                    MessageBox.Show("יחידת דיור עודכנה");
+                    MessageBox.Show("יחידת דיור עודכנה. הסיסמא לכניסה 1234");
                     hostingunit = null;
                     Close();
                 }
             }
-            catch(OurException ex)
+            catch (OurException ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void Update_Click(object sender, RoutedEventArgs e)
@@ -125,7 +126,7 @@ namespace PLWPF
             hostingUnitName.Text = hostingunit.HostingUnitName;
             privateName.Text = hostingunit.Owner.PrivateName;
             familyName.Text = hostingunit.Owner.FamilyName;
-            id.Text = hostingunit.Owner.HostId.ToString(); 
+            id.Text = hostingunit.Owner.HostId.ToString();
             fhoneNumber.Text = hostingunit.Owner.FhoneNumber.ToString();
             email.Text = hostingunit.Owner.MailAddress;
             bankName.Text = hostingunit.Owner.BankBranchDetails.BankName;
@@ -162,7 +163,7 @@ namespace PLWPF
             hostingunit.ChilldrensAttractions = (bool)ChilldrensAttractions.IsChecked;
         }
 
-        
+
         private bool checkIfAllFildesAreFilled()
         {
             bool invalid = grid.Children.OfType<TextBox>()
@@ -195,15 +196,18 @@ namespace PLWPF
             foreach (var comboBox in comboBoxes)
             {
                 comboBox.IsEnabled = true;
-            }
+            }//
             foreach (var checkBox in checkBoxes)
             {
                 checkBox.IsEnabled = true;
-            }
+            }//
+            BranchCity.IsEnabled = false;
+            bankNumber.IsEnabled = false;
+            BankAccountNumber.IsEnabled = true;
         }
         private void back()
-        {            
-            Close();            
+        {
+            Close();
         }
 
         private void HostingUnitKey_LostFocus(object sender, RoutedEventArgs e)
@@ -238,7 +242,7 @@ namespace PLWPF
             int fnumber;
             if (int.TryParse(fhoneNumber.Text, out fnumber))
                 owner.FhoneNumber = fnumber;
-            else if(!string.IsNullOrWhiteSpace(fhoneNumber.Text))
+            else if (!string.IsNullOrWhiteSpace(fhoneNumber.Text))
             {
                 MessageBox.Show("ניתן למלא רק מספרים");
                 fhoneNumber.Clear();
@@ -263,11 +267,6 @@ namespace PLWPF
                 owner.MailAddress = email.Text;
         }
 
-        private void BankName_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(bankName.Text))
-                BankBranchDetails.BankName = bankName.Text;
-        }
 
         private void BankNumber_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -279,13 +278,22 @@ namespace PLWPF
                 MessageBox.Show("ניתן למלא רק מספרים");
                 bankNumber.Clear();
             }
-        }    
+        }
 
         private void BrunchNumber_LostFocus(object sender, RoutedEventArgs e)
         {
             int BrunchNum;
             if (int.TryParse(brunchNumber.Text, out BrunchNum))
-                BankBranchDetails.BranchNumber = BrunchNum;
+            {
+                if (bl.GetAllBankBranch().Exists(x => x.BranchNumber.ToString() == brunchNumber.Text))
+                {
+                    BankBranchDetails.BranchNumber = BrunchNum;
+                    setBankAdress();
+                    BankBranchDetails.BranchAddress = BranchAddress.Text;
+                }
+                else
+                    MessageBox.Show("מספר סניף לא קיים");
+            }
             else if (!string.IsNullOrWhiteSpace(brunchNumber.Text))
             {
                 MessageBox.Show("ניתן למלא רק מספרים");
@@ -377,14 +385,9 @@ namespace PLWPF
             }
         }
 
-        private void BranchAddress_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(BranchAddress.Text))
-                BankBranchDetails.BranchAddress = BranchAddress.Text;
-        }
         private void HostingUnitName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(hostingUnitKey.Text)|| !string.IsNullOrEmpty(hostingUnitName.Text))
+            if (!string.IsNullOrEmpty(hostingUnitKey.Text) || !string.IsNullOrEmpty(hostingUnitName.Text))
                 addOrUpdate.IsEnabled = true;
             else
                 addOrUpdate.IsEnabled = false;
@@ -392,12 +395,47 @@ namespace PLWPF
 
         private void HostingUnitKey_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(hostingUnitName.Text)|| !string.IsNullOrEmpty(hostingUnitKey.Text))
+            if (!string.IsNullOrEmpty(hostingUnitName.Text) || !string.IsNullOrEmpty(hostingUnitKey.Text))
                 addOrUpdate.IsEnabled = true;
             else
                 addOrUpdate.IsEnabled = false;
         }
+        private void setBankNumber()
+        {
+            bankNumber.Text = bl.GetAllBankBranch().Find(x => x.BankName == bankName.Text).BankNumber.ToString();
+        }
+        private void setBankAdress()
+        {
+            BranchAddress.Text = bl.GetAllBankBranch().Find(x => x.BranchNumber.ToString() == brunchNumber.Text).BranchAddress;
+        }
+        private void checkBnakDetials()
+        {
+            var bankList = bl.GetAllBankBranch();
 
-        
+
+            if (!bankList.Exists(x => x.BranchCity == BranchCity.Text))
+            {
+                BranchCity.Clear();
+                MessageBox.Show("לא קיים סניף בעיר הזאת");
+            }
+            if (!bankList.Exists(x => x.BranchNumber.ToString() == brunchNumber.Text))
+            {
+                brunchNumber.Clear();
+                MessageBox.Show("לא קיים סניף עם הכתובת הזו");
+            }
+
+        }
+
+        private void BankName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(bankName.Text))
+            {
+                BankBranchDetails.BankName = bankName.Text;
+                setBankNumber();
+                BranchCity.IsEnabled = true;
+                bankNumber.IsEnabled = true;
+                BankAccountNumber.IsEnabled = true;
+            }
+        }
     }
 }

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Xml.Serialization;
 
 namespace BE
 {
     [Serializable]
-    public class Host : IComparable, IEnumerable
+    public class Host : IComparable
     {
         public int HostId { get; set; }
         public int FhoneNumber { get; set; }
@@ -32,7 +33,7 @@ namespace BE
             answer += nameOfVarible[i++] + BankAccountNumber.ToString() + "\n";
             answer += nameOfVarible[i++] + CollectionClearance.ToString() + "\n";
             answer += nameOfVarible[i++] + BankBranchDetails.ToString() + "\n";
-            answer += nameOfVarible[i++] +  "\n";
+            answer += nameOfVarible[i++] + "\n";
 
             foreach (var item in HostingUnitCollection)
             {
@@ -42,15 +43,11 @@ namespace BE
             return answer;
         }
 
-        public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable)HostingUnitCollection).GetEnumerator();
-        }
         public void SortUnits()
         {
             HostingUnitCollection.Sort();
         }
-       
+
         public int CompareTo(object obj)
         {
             return ((IComparable)HostId).CompareTo(obj);

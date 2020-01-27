@@ -26,22 +26,23 @@ namespace PLWPF
         private int min, max, temp;
         private bool NoProblem = false;
         GuestRequest inputGuestRequest = new GuestRequest();
-        
-        
+
+
         public AddGuestRequest()
         {
             InitializeComponent();
             message.Visibility = Visibility.Hidden;
-            Dates dates = new Dates();            
+            Dates dates = new Dates();
             EntryDate.DisplayDateStart = dates.Today;
             RelaeseDate.DisplayDateStart = dates.Today.AddDays(1);
             EntryDate.DisplayDateEnd = dates.EndDate;
             RelaeseDate.DisplayDateEnd = dates.EndDate;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
-        
-       
 
-        
+
+
+
 
         private void Type_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -99,7 +100,7 @@ namespace PLWPF
         }
 
         private void PrivateName_TextChanged(object sender, TextChangedEventArgs e)
-        {            
+        {
             inputGuestRequest.PrivateName = PrivateName.Text;
         }
 
@@ -111,7 +112,7 @@ namespace PLWPF
         private void Mail_TextChanged(object sender, TextChangedEventArgs e)
         {
             inputGuestRequest.MailAddress = Mail.Text;
-        }      
+        }
         private void CheckInSelected(object sender, SelectionChangedEventArgs e)
         {
             inputGuestRequest.EntryDate = (DateTime)EntryDate.SelectedDate;
@@ -122,7 +123,7 @@ namespace PLWPF
             inputGuestRequest.ReleaseDate = (DateTime)RelaeseDate.SelectedDate;
         }
 
-        
+
 
         private void Atraction_Changed(object sender, SelectionChangedEventArgs e)
         {
@@ -154,7 +155,7 @@ namespace PLWPF
 
                 if (int.TryParse(MinCost.Text, out temp))
                     min = int.Parse(MinCost.Text);
-                else if(!string.IsNullOrWhiteSpace(MinCost.Text))
+                else if (!string.IsNullOrWhiteSpace(MinCost.Text))
                     throw new OurException("צריך להכניס מספר");
             }
             catch (OurException ex)
@@ -171,7 +172,7 @@ namespace PLWPF
 
                 if (int.TryParse(MaxCost.Text, out temp))
                     max = int.Parse(MaxCost.Text);
-                else if(!string.IsNullOrWhiteSpace(MaxCost.Text))
+                else if (!string.IsNullOrWhiteSpace(MaxCost.Text))
                     throw new OurException("צריך להכניס מספר");
             }
             catch (OurException ex)
@@ -188,7 +189,7 @@ namespace PLWPF
 
                 if (int.TryParse(Adults.Text, out temp))
                     inputGuestRequest.Adults = int.Parse(Adults.Text);
-                else if(!string.IsNullOrWhiteSpace(Adults.Text))
+                else if (!string.IsNullOrWhiteSpace(Adults.Text))
                     throw new OurException("מספר המבוגרים צריך להיות ספרה");
             }
             catch (OurException ex)
@@ -198,7 +199,7 @@ namespace PLWPF
             }
         }
 
-        
+
 
         private void Chilldren_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -206,7 +207,7 @@ namespace PLWPF
             {
                 if (int.TryParse(Chilldren.Text, out temp))
                     inputGuestRequest.Children = int.Parse(Chilldren.Text);
-                else if(!string.IsNullOrWhiteSpace(Chilldren.Text))
+                else if (!string.IsNullOrWhiteSpace(Chilldren.Text))
                     throw new OurException("מספר הילדים צריך להיות ספרה צריך להיות ספרה");
             }
 
@@ -233,13 +234,13 @@ namespace PLWPF
         {
             if (string.IsNullOrWhiteSpace(Mail.Text))
                 Mail.Text = "כתובת מייל";
-        }      
+        }
         private void Check_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 NoProblem = true;
-                if (!checkIfAllTextBoxAreFilled() ||! checkIfAllComboboxAreFilled()||!checkIfAllRadioButtonAreFilled()||!checkIfCalanderWasFilled())
+                if (!checkIfAllTextBoxAreFilled() || !checkIfAllComboboxAreFilled() || !checkIfAllRadioButtonAreFilled() || !checkIfCalanderWasFilled())
                     throw new OurException("אחד או יותר מהשדות אינו מלא");
                 if (NoProblem)
                 {
@@ -276,7 +277,7 @@ namespace PLWPF
         }
         private bool checkIfAllRadioButtonAreFilled()
         {
-            if (no.IsChecked==false && twoMeals.IsChecked==false && fullMeals.IsChecked==false )
+            if (no.IsChecked == false && twoMeals.IsChecked == false && fullMeals.IsChecked == false)
                 return false;
             return true;
         }
@@ -297,6 +298,6 @@ namespace PLWPF
             EndDate = DateTime.Now.AddMonths(11);
         }
     }
-    
+
 
 }

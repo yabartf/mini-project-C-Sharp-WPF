@@ -27,7 +27,7 @@
             <ImageBrush ImageSource="https://ae01.alicdn.com/kf/HTB1.doVcuuSBuNjSsplq6ze8pXaG/-.jpg" Stretch="UniformToFill"></ImageBrush>
         </Grid.Background>
         <StackPanel>
-        <Button Name="addGuestRequest" Content="חיפוש צימר" FontSize="20"  VerticalContentAlignment="Center"  VerticalAlignment="Center"  Click="AddGuestRequest_Click"  Margin="20,50"/>
+            <Button Name="addGuestRequest" Content="חיפוש צימר" FontSize="20"  VerticalContentAlignment="Center"  VerticalAlignment="Center"  Click="AddGuestRequest_Click"  Margin="20,50"/>
             <Button Name="hostingUnitManage" Content=" (ניהול יחידות אירוח (איזור אישי" FontSize="20"   VerticalAlignment="Center"   Click="HostingUnitManage_Click" Margin="20,0"/>
             <Button Name="orderManage" Content="ניהול הזמנות" FontSize="20"    VerticalAlignment="Center"  Click="OrderManage_Click"    Margin="20,50"/>
             <Button Content="מנהל האתר" Margin="20,0" Click="owner"  />

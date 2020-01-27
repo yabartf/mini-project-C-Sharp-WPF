@@ -76,17 +76,69 @@
         <TextBlock  Text=":מייל" Grid.Column="1" Grid.Row="3" Margin="309.6,13,45.6,5" VerticalAlignment="Center" Height="18" RenderTransformOrigin="0.018,0.573"/>
 
         <TextBlock Grid.Column="1" Grid.Row="4" Text=":פרטי חשבון" HorizontalAlignment="Right" Margin="0,6,45.6,42" />
-        <TextBox Name="bankName" LostFocus="BankName_LostFocus" Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="235.6,33,101.6,11" RenderTransformOrigin="0.516,-0.018"/>
+        <ComboBox Name="bankName"  Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="235.6,33,101.6,11" RenderTransformOrigin="0.516,-0.018" SelectionChanged="BankName_SelectionChanged">
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק דיסקונט לישראל בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק אוצר החייל בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    יובנק בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    הבנק הבינלאומי הראשון לישראל בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק מסד בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק מזרחי טפחות בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק לאומי לישראל בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק ירושלים בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק יהב לעובדי המדינה בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+            <ComboBoxItem>
+                <ComboBoxItem.Content>
+                    בנק הפועלים בע"מ
+                </ComboBoxItem.Content>
+            </ComboBoxItem>
+        </ComboBox>
+
         <Label Content=":שם בנק" Grid.Row="4" Margin="301.6,33,25.6,0" Grid.Column="1" Height="26" VerticalAlignment="Top"/>
         <TextBox Name="bankNumber" LostFocus="BankNumber_LostFocus" Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="96.6,33,240.6,11" RenderTransformOrigin="0.867,0.382"/>
         <Label  Content=":מספר בנק" Grid.Column="1" Grid.Row="4" Margin="166.6,32,166.6,6"/>
 
-        
+
 
         <TextBox Name="brunchNumber" LostFocus="BrunchNumber_LostFocus" Grid.Column="1"
-                     Grid.Row="6"
+                     Grid.Row="5"
                          Width="70"
-                        Height="20" IsEnabled="False" Margin="234.6,19,102.6,25"/>
+                        Height="20" IsEnabled="False" Margin="96.6,25,240.6,19"/>
         <Label Grid.Column="1"
                            Grid.Row="6"
                       Content=":מס חשבון" Margin="0,19,169.6,19" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
@@ -95,8 +147,8 @@
                          Width="70"
                         Height="20" IsEnabled="False" Margin="97.6,19,239.6,25"/>
         <Label Grid.Column="1"
-                           Grid.Row="6"
-                      Content=":מספר סניף" Margin="0,19,31.6,19" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
+                           Grid.Row="5"
+                      Content=":מספר סניף" Margin="0,24,172.6,14" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
 
         <Label Grid.Column="0" Grid.Row="0" Content=":פרטי יחידה"  HorizontalAlignment="Right" Margin="0,3,9.8,36.4" />
 
@@ -133,8 +185,8 @@
             <ComboBoxItem Content="מרכז"/>
             <ComboBoxItem Content="ירושלים"/>
         </ComboBox>
-        <TextBox Name="BranchAddress" LostFocus="BranchAddress_LostFocus" Grid.Column="1" Grid.Row="5" Width="70" Height="20" IsEnabled="False" Margin="96.6,24,240.6,20" RenderTransformOrigin="0.543,-0.245"/>
-        <TextBlock Text=":כתובת"  Grid.Column="1" Grid.Row="5" Margin="171.6,25,180.6,20"/>
+        <TextBox Name="BranchAddress"  Grid.Column="1" Grid.Row="6" Width="70" Height="20" IsEnabled="False" Margin="234.6,19,102.6,25" RenderTransformOrigin="0.543,-0.245"/>
+        <TextBlock Text=":כתובת"  Grid.Column="1" Grid.Row="6" Margin="309.6,24,42.6,21"/>
         <TextBox Name="BranchCity" LostFocus="BranchCity_LostFocus" Grid.Column="1" Grid.Row="5" Width="70" Height="20" IsEnabled="False" Margin="236.6,24,100.6,20"/>
         <TextBlock Text=":עיר" Grid.Column="1" Grid.Row="5" Margin="309.6,25,57.6,20"/>
 

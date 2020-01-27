@@ -1,18 +1,37 @@
 ﻿using System;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+
+
+
+
+
+
 
 namespace BE
 {
     [Serializable]
-    public class HostingUnit : IComparable, IEnumerable
+    public class HostingUnit : IComparable
     {
-       public List<bool> help=new List<bool>();
-        public List<int> help1=new List<int>();
+
+        [XmlIgnore]
         public bool[,] Diary = new bool[12, 31];
+
+        //[XmlArray("Diary")]
+        //public bool[] DiaryToXml
+        //{
+        //    get { return Diary.Flatten(); }
+        //    set { Diary = value.Expand(12); }
+        //}
+
         public int hostingUnitKey { get; set; }
         public int pricePerNight { get; set; }
         public string city;
@@ -32,30 +51,51 @@ namespace BE
         public bool ChilldrensAttractions { get; set; }
         public int Meals { get; set; }
         public List<Order> orders = new List<Order>();
-        public string[] nameOfVarible = new string[] {"Hosting unit name: ", "hosting unit key: ", "rating: ","Type: ","Adults: ","children: ","Meals: ",
-            "spa: ", "flat tv: ", "air condition: ", "Pool: ","Jacuzzy: ","Garden: ","Childrens attractions: " };
-        private void addToList()
-        {
-            help.Add(spa); help.Add(flatTv); help.Add(airCondition); help.Add(Pool); help.Add(Jacuzzy);
-            help.Add(Garden); help.Add(ChilldrensAttractions);
-            help1.Add(hostingUnitKey); help1.Add(rating); help1.Add(Type); help1.Add(Adults);
-            help1.Add(Children); help1.Add(Meals);
-        }
+
         public int CompareTo(object obj)
-            
+
         {
             return ((IComparable)hostingUnitKey).CompareTo(obj);
         }
+
+        
+
         public int area { get; set; }
-        
-        
-        
-        public string[] feedback=new string[0];//צריך לסדר את המערך
-      
-        public IEnumerator GetEnumerator()//implementation of IEnumerator
-        {
-            return Diary.GetEnumerator();
-        }
+
     }
-    
+    public static class Tools
+    {
+        public static bool[] Flatten(this bool[,] arr)
+        {
+            int rows = arr.GetLength(0);
+            int columns = arr.GetLength(1);
+            bool[] arrFlattened = new bool[rows * columns];
+            for (int j = 0; j < rows; j++)
+            {
+                for (int i = 0; i < columns; i++)
+                {
+                    var test = arr[i, j];
+                    arrFlattened[i * rows + j] = arr[i, j];
+                }
+            }
+            return arrFlattened;
+        }
+        public static bool[,] Expand(this bool[] arr, int rows)
+        {
+            int length = arr.GetLength(0);
+            int columns = length / rows;
+            bool[,] arrExpanded = new bool[rows, columns];
+            for (int j = 0; j < rows; j++)
+            {
+                for (int i = 0; i < columns; i++)
+                {
+                    arrExpanded[i, j] = arr[i + j * rows];
+                }
+            }
+            return arrExpanded;
+        }
+
+
+    }
+
 }

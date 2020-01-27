@@ -14,7 +14,7 @@ namespace DAL
         void addHostingUnit(HostingUnit hu);
         void deleteHostingUnit(HostingUnit hu);
         void updateHostingUnit(HostingUnit hu);
-        void addOrder(GuestRequest g,List<HostingUnit> suites);
+        void addOrder(GuestRequest g, List<HostingUnit> suites);
         void updateOrder(Order ord);
         bool noOrders(HostingUnit hu);
         List<HostingUnit> GetAllHostingUnits();
@@ -25,8 +25,8 @@ namespace DAL
 
 
     }
-  
-  
-        
-  
+
+
+
+
 }

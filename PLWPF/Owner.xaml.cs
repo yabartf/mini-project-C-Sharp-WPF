@@ -24,24 +24,15 @@ namespace PLWPF
     {
         private ObservableCollection<Guest_Requests> list = new ObservableCollection<Guest_Requests>();
         private BL.BL_imp bl = BL.BL_imp.getBl();
-        private Guest_Requests guest=new Guest_Requests();
+        private Guest_Requests guest = new Guest_Requests();
         public Owner()
         {
             InitializeComponent();
-            foreach (var guestrequest in bl.GetAllGuests())
-            {
-                Guest_Requests guest_ = new Guest_Requests();
-                guest_.area = "" + (Area)guestrequest.Area;
-                guest_.nofshim = (guestrequest.Children + guestrequest.Adults);
-                guest_.start = guestrequest.EntryDate.ToString("dd/MM/yy");
-                guest_.finish = guestrequest.ReleaseDate.ToString("dd/MM/yy");
-                list.Add(guest_);
-            }
-            ListOfGuestRequest.Opacity = list.Any() ? 1 : 0;
-            DataContext = list;
+            CreateListFromList(bl.GetAllGuests());
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
-        
-           
+
+
         public class Guest_Requests
         {
             public string start, finish, area;
@@ -54,34 +45,66 @@ namespace PLWPF
 
         private void ByVacationer(object sender, RoutedEventArgs e)
         {
-            var list =bl.groupGuestRequestByNumOfVacationer();
-            CreateList(list);
+            var guestRequestDict = bl.groupGuestRequestByNumOfVacationer();
+            CreateListFromDictionary(guestRequestDict);
         }
 
         private void ByArea(object sender, RoutedEventArgs e)
         {
-            var byArea = bl.groupGuestRequestByArea();
-            CreateList(byArea);
+            var guestRequestDict = bl.groupGuestRequestByArea();
+            CreateListFromDictionary(guestRequestDict);
         }
-        private void CreateList(Dictionary<int,List<GuestRequest>> guestRequestlist)
+        private void CreateListFromDictionary(Dictionary<int, List<GuestRequest>> guestRequestDict)
         {
             list.Clear();
-            foreach (var item in guestRequestlist)
+            foreach (var item in guestRequestDict)
             {
                 DataContext = item.Key;
                 foreach (var guestrequest in item.Value)
                 {
                     Guest_Requests guest_ = new Guest_Requests();
-                    guest_.area =""+ (Area)guestrequest.Area;
+                    guest_.area = "" + (Area)guestrequest.Area;
                     guest_.nofshim = (guestrequest.Children + guestrequest.Adults);
                     guest_.start = guestrequest.EntryDate.ToString("dd/MM/yy");
                     guest_.finish = guestrequest.ReleaseDate.ToString("dd/MM/yy");
                     list.Add(guest_);
-                }                
+                }
             }
-           
-            DataContext = list;
+            if (list.Any())
+            {
+                noData.Visibility = Visibility.Collapsed;
+                ListOfGuestRequest.Opacity = 1;
+                DataContext = list;
+            }
+            else
+            {
+                ListOfGuestRequest.Opacity = 0;
+                noData.Visibility = Visibility.Visible;
+            }
         }
-        
+        private void CreateListFromList(List<GuestRequest> guestRequestlist)
+        {
+            list.Clear();
+            foreach (var item in guestRequestlist)
+            {
+                Guest_Requests guest_ = new Guest_Requests();
+                guest_.area = "" + (Area)item.Area;
+                guest_.nofshim = (item.Children + item.Adults);
+                guest_.start = item.EntryDate.ToString("dd/MM/yy");
+                guest_.finish = item.ReleaseDate.ToString("dd/MM/yy");
+                list.Add(guest_);
+            }
+            if (list.Any())
+            {
+                noData.Visibility = Visibility.Collapsed;
+                ListOfGuestRequest.Opacity = 1;
+                DataContext = list;
+            }
+            else
+            {
+                ListOfGuestRequest.Opacity = 0;
+                noData.Visibility = Visibility.Visible;
+            }
+        }
     }
 }

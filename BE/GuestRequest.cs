@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace BE
 {
     [Serializable]
-    public class GuestRequest : IComparable, IEnumerable
-    {        
+    public class GuestRequest : IComparable
+    {
         public DateTime EntryDate { get; set; }
         public DateTime ReleaseDate { get; set; }
         public DateTime RegistrationDate { get; set; }
@@ -22,27 +22,27 @@ namespace BE
         public string MailAddress { get; set; }
         public int Area { get; set; }
         public int GuestRequestKey { get; set; }
-        public int  Type { get; set; }
+        public int Type { get; set; }
         public int Adults { get; set; }
         public int Children { get; set; }
         public int Pool { get; set; }
-        public int  Jacuzzy { get; set; }
+        public int Jacuzzy { get; set; }
         public int Garden { get; set; }
         public int ChildrensAttractions { get; set; }
         public int Meals { get; set; }
         public GuestRequest() { addToList(); }
         private string[] nameOfVarible = new string[] {"Guest request key: ","Private name: ","Family name: ","Mail address: " ,"Entry date: ","Release date: ","Registration date: ","status: ","spa: ","flat tv: "
         ,"air condition: ","Pool: ","Jacuzzy: ","Garden: ","Childrens attractions: ","Area: ","Type: ","Adults: ","Children: ","Meals: "};
-        public List<int> varible=new List<int>();
+        public List<int> varible = new List<int>();
         private void addToList()
         {
             varible.Add(spa); varible.Add(flatTv); varible.Add(airCondition); varible.Add(Pool); varible.Add(Jacuzzy); varible.Add(Garden);
             varible.Add(ChildrensAttractions);
         }
         public override string ToString()
-        {            
+        {
             int i = 0;
-            string answer=nameOfVarible[i++]+ GuestRequestKey.ToString()+"\n";
+            string answer = nameOfVarible[i++] + GuestRequestKey.ToString() + "\n";
             answer += nameOfVarible[i++] + PrivateName + "\n";
             answer += nameOfVarible[i++] + FamilyName + "\n";
             answer += nameOfVarible[i++] + MailAddress + "\n";
@@ -66,9 +66,6 @@ namespace BE
             return ((IComparable)GuestRequestKey).CompareTo(obj);
         }
 
-        public IEnumerator GetEnumerator()
-        {
-            return ((IEnumerable)varible).GetEnumerator();
-        }
+        
     }
 }

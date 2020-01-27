@@ -28,18 +28,21 @@ namespace PLWPF
         {
             InitializeComponent();
             var HostingUnitDictionry = bl.groupHostingUnitByArea();
-                list.Clear();
-                foreach (var item in HostingUnitDictionry)
+            list.Clear();
+            foreach (var item in HostingUnitDictionry)
+            {
+                DataContext = item.Key;
+                foreach (var hosting in item.Value)
                 {
-                    DataContext = item.Key;
-                    foreach (var hosting in item.Value)
-                    {
                     list.Add(hosting);
-                    }
                 }
-                ListOfGuestRequest.Opacity = list.Any() ? 1 : 0;
-                DataContext = list;
             }
+            ListOfGuestRequest.Opacity = list.Any() ? 1 : 0;
+            DataContext = list;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
+
+
     }
+}
 

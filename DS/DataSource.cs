@@ -10,12 +10,13 @@ namespace DS
     static public class DataSource
     {
 
-        
+
         static Random rand = new Random();
-        static DataSource() {}
-        public static List<HostingUnit> allHostingUnits=new List<HostingUnit>();
-        public static List<GuestRequest> allGuests=new List<GuestRequest>();
-        public static List<Order> allOrders=new List<Order>();
+        static DataSource() { }
+        public static List<HostingUnit> allHostingUnits = new List<HostingUnit>();
+        public static List<GuestRequest> allGuests = new List<GuestRequest>();
+        public static List<Order> allOrders = new List<Order>();
+        public static List<int> Passwords = new List<int>();
         ////public static void restart_order()
         ////{
         ////    for (int i = 0; i < 10; i++)
@@ -67,9 +68,10 @@ namespace DS
                 gs.ReleaseDate = tempDate.AddDays(tempRand + rand.Next(2, 10));
                 gs.GuestRequestKey = Configuration.GuestRequestKey++;
                 allGuests.Add(gs);
+
             }
         }
-        
+
     }
 
 }
