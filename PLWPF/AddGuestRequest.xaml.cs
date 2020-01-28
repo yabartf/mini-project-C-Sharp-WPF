@@ -244,8 +244,7 @@ namespace PLWPF
                     throw new OurException("אחד או יותר מהשדות אינו מלא");
                 if (NoProblem)
                 {
-                    message.Text = "תודה רבה! הבקשה התקבלה";
-                    message.Visibility = Visibility.Visible;
+                    MessageBox.Show("תודה רבה! הבקשה נקלטה");
                     tempMyBl.addGuestRequest(inputGuestRequest);
                     Hide();
                 }

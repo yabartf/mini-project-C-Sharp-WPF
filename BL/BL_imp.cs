@@ -14,10 +14,10 @@ namespace BL
     public class BL_imp : IBL
     {
         DAL_Xml_imp dal = DAL_Xml_imp.getDal_XML();
-        private static BL_imp bl = null;
-        public delegate void threadstart();
+        private static BL_imp bl = null;       
 
         Thread UpdateOrders;
+        #region Order Functions
         public void UpdateAllOrders()
         {
             DateTime d = DateTime.Now;
@@ -37,20 +37,110 @@ namespace BL
             }
             Thread.Sleep(86400000);
         }
-
-        private BL_imp()
+        /// <summary>
+        /// update order and if other orders of this hosting unit cant to exist is closing they. 
+        /// </summary>
+        /// <param name="ord"></param>
+        public void updateOrder(Order ord)
         {
-            //  dal.restartLists();            
-            new Thread(UpdateAllOrders);
+            try
+            {
+                dal.updateOrder(ord.Copy());
+                // check wich cant to exist from now.
+                var faild_order = from item in hostingUnitByOrder(ord).orders
+                                  where IsCommonDates(guestRequestByOrder(ord), guestRequestByOrder(item))
+                                  select item;
+                foreach (var item in faild_order)
+                {
+                    item.status = (int)Status.Faild;
+                    dal.updateOrder(item.Copy());
+                }
+            }
+            catch (OurException)
+            {
+                throw new OurException();
+            }
+        }
+        public void addOrder(GuestRequest g, List<HostingUnit> hu)
+        {
+            dal.addOrder(g.Copy(), hu.Copy());
         }
 
-        public static BL_imp getBl()
+        #endregion
+
+        #region Hosting uints Functions
+        public void addHostingUnit(HostingUnit hu)
         {
-            if (bl == null)
-                bl = new BL_imp();
-            return bl;
+
+            try
+            {
+                checkHostingUnitDetails(hu);
+                dal.addHostingUnit(hu.Copy());
+            }
+            catch (OurException ex)
+            {
+                throw ex;
+            }
+        }
+        public void updateHostingUnit(HostingUnit hu)
+        {
+            try
+            {
+                checkHostingUnitDetails(hu);
+                dal.updateHostingUnit(hu.Copy());
+            }
+            catch (OurException ex)
+            {
+                throw ex;
+            }
         }
 
+        public bool deleteHostingUnit(int inputKey)
+        {
+            try
+            {
+                foreach (var item in dal.GetAllHostingUnits())
+                    if (item.hostingUnitKey == inputKey)
+                    {
+                        dal.deleteHostingUnit(item.Copy());
+                        return true;
+                    }
+                return false;
+            }
+            catch (OurException ex)
+            {
+                throw ex;
+            }
+        }
+        public bool checkHostingUnitDetails(HostingUnit hostingUnit)
+        {
+            if (hostingUnit.Children < 0 || hostingUnit.Adults < 0)
+                throw new OurException("מספר ילדים ומבוגרים חייב להיות גדול מ0");
+            if (hostingUnit.Children == 0 && hostingUnit.Adults == 0)
+                throw new OurException("מספר הנופשים חייב להיות גדול מ0");
+            if (hostingUnit.area < 1 || hostingUnit.area > 5)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            if (hostingUnit.Type < 1 || hostingUnit.Type > 5)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            if (hostingUnit.Meals != 0 && hostingUnit.Meals != 2 && hostingUnit.Meals != 3)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            if (hostingUnit.pricePerNight <= 0)
+                throw new OurException("מחיר חייב להיות גדול מ0");
+            if (!checkFhoneNumber(hostingUnit.Owner.FhoneNumber))
+                throw new OurException("מספר טלפון לא תקין");
+            if (!checkName(hostingUnit.Owner.PrivateName) || !checkName(hostingUnit.Owner.FamilyName))
+                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
+            if (!checkName(hostingUnit.city))
+                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
+            if (!checkName(hostingUnit.Owner.BankBranchDetails.BranchCity))
+                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
+            //checkBankDitails(hostingUnit);
+            return true;
+        }
+
+        #endregion
+
+        #region Guest requests Functions
         /// <summary>
         /// check if duration > 1
         /// </summary>
@@ -80,50 +170,7 @@ namespace BL
                 throw ex;
             }
         }
-        public bool craditAuthorization(Host h, Order order)
-        {
-            if (h.CollectionClearance)
-            {
-                order.status = (int)Status.SentMail;
-                return true;
-            }
-            return false;
-        }
 
-        /// <summary>
-        /// look for hostung unit suit for geus request 
-        /// </summary>
-        /// <param name="guestrequest"></param>
-        /// <returns></returns>
-        public List<HostingUnit> suitble(GuestRequest guestrequest)
-        {
-            HostingUnit hostingunit = new HostingUnit();
-            var hostingUnitList = from item in GetAllHostingUnits()
-                                  where wantFilter(guestrequest, item).All(f => f(guestrequest, item)) && checkDates(guestrequest, item)
-                                  select item;
-            
-            return hostingUnitList.ToList();
-        }
-
-        /// <summary>
-        /// chck if the dates empty
-        /// </summary>
-        /// <param name="guestrequest"></param>
-        /// <param name="hostingunit"></param>
-        /// <returns></returns>
-        public bool checkDates(GuestRequest guestrequest, HostingUnit hostingunit)
-        {
-            // check if all is proper
-            for (DateTime tempDate = guestrequest.EntryDate;
-                tempDate < guestrequest.ReleaseDate;
-                tempDate = tempDate.AddDays(1))
-            {
-                if (hostingunit.Diary[tempDate.Month - 1, tempDate.Day - 1])
-                    return false; // if once wrong instant return false.
-            }
-
-            return true;
-        }
         /// <summary>
         /// adding guest and suit order
         /// </summary>
@@ -135,77 +182,14 @@ namespace BL
                 if (checkGuestRequestDetails(g))
                 {
                     List<HostingUnit> listHostings = suitble(g);
-                    if (!listHostings.Any())
-                        throw new OurException("אין יחידת אירוח מתאימה");
+                    //  if (!listHostings.Any())
+                    //    throw new OurException("אין יחידת אירוח מתאימה");
                     g = dal.addGuestRequest(g.Copy());
                     addOrder(g, listHostings);
                 }
             }
             catch (OurException ex)
             {
-                throw ex;
-            }
-        }
-
-        public void addHostingUnit(HostingUnit hu)
-        {
-
-            try
-            {
-                checkHostingUnitDetails(hu);
-                dal.addHostingUnit(hu.Copy());
-            }
-            catch (OurException ex)
-            {
-                throw ex;
-            }
-        }
-
-
-        public List<BankBranch> GetAllBankBranch()
-        {
-            return dal.GetAllBankBranch();
-        }
-
-        public List<GuestRequest> GetAllGuests()
-        {
-            try
-            {
-                return dal.getAllGuests();
-            }
-            catch (OurException ex)
-            {
-
-                throw ex;
-            }
-
-        }
-
-
-        public List<HostingUnit> GetAllHostingUnits()
-        {
-
-            try
-            {
-                return dal.GetAllHostingUnits();
-            }
-            catch (OurException ex)
-            {
-
-                throw ex;
-            }
-        }
-
-        public List<Order> getAllOrder()
-        {
-
-            try
-            {
-                return dal.getAllOrder();
-            }
-            catch (OurException ex)
-            {
-
                 throw ex;
             }
         }
@@ -223,18 +207,40 @@ namespace BL
             }
         }
 
-        public void updateHostingUnit(HostingUnit hu)
+        private bool checkGuestRequestDetails(GuestRequest guestRequest)
         {
-            try
-            {
-                checkHostingUnitDetails(hu);
-                dal.updateHostingUnit(hu.Copy());
-            }
-            catch (OurException ex)
-            {
-                throw ex;
-            }
+            legitDates(guestRequest);
+            if (guestRequest.Children < 0 || guestRequest.Adults < 0)
+                throw new OurException("מספר מבוגרים וילדים לא יכול להיות שלילי");
+            if (guestRequest.Children == 0 && guestRequest.Adults == 0)
+                throw new OurException("מספר הנופשים חייב להיות גדול מ0");
+            checkNecessityEnum(guestRequest.airCondition);
+            if (guestRequest.Area < 1 || guestRequest.Area > 5)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            checkNecessityEnum(guestRequest.ChildrensAttractions);
+            checkNecessityEnum(guestRequest.flatTv);
+            checkNecessityEnum(guestRequest.Jacuzzy);
+            checkNecessityEnum(guestRequest.Pool);
+            checkNecessityEnum(guestRequest.Garden);
+            checkNecessityEnum(guestRequest.spa);
+            if (guestRequest.status < 1 && guestRequest.status > 5)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            if (guestRequest.Type < 1 && guestRequest.Type > 5)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
+            if (!checkName(guestRequest.PrivateName) || !checkName(guestRequest.FamilyName))
+                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
+            return true;
         }
+        private void checkNecessityEnum(int neecessity)
+        {
+            if (neecessity < 1 || neecessity > 3)
+                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 3");
+        }
+
+
+        #endregion
+
+        #region Search and help Functions
         /// <summary>
         /// check if the dates of guest rquests is commons
         /// </summary>
@@ -249,35 +255,7 @@ namespace BL
                 return source.EntryDate < other.ReleaseDate;
             return true;
         }
-        /// <summary>
-        /// update order and if other orders of this hosting unit cant to exist is closing they. 
-        /// </summary>
-        /// <param name="ord"></param>
-        public void updateOrder(Order ord)
-        {
-            try
-            {
-                dal.updateOrder(ord.Copy());
-                // check wich cant to exist from now.
-                var faild_order = from item in hostingUnitByOrder(ord).orders
-                                  where IsCommonDates(guestRequestByOrder(ord), guestRequestByOrder(item))
-                                  select item;
-                foreach (var item in faild_order)
-                {
-                    item.status = (int)Status.Faild;
-                    dal.updateOrder(item.Copy());
-                }
-            }
-            catch (OurException)
-            {
-                throw new OurException();
-            }
-        }
 
-        public void addHostingUnit()
-        {
-            throw new NotImplementedException();
-        }
         public IEnumerable<GuestRequest> li()
         {
             var list = from x in dal.getAllGuests()
@@ -384,23 +362,6 @@ namespace BL
             return Filter;
         }
 
-        public bool deleteHostingUnit(int inputKey)
-        {
-            try
-            {
-                foreach (var item in dal.GetAllHostingUnits())
-                    if (item.hostingUnitKey == inputKey)
-                    {
-                        dal.deleteHostingUnit(item.Copy());
-                        return true;
-                    }
-                return false;
-            }
-            catch (OurException ex)
-            {
-                throw ex;
-            }
-        }
 
         public List<HostingUnit> ownersHostingUnits(int id)
         {
@@ -496,35 +457,7 @@ namespace BL
             }
         }
 
-        public void addOrder(GuestRequest g, List<HostingUnit> hu)
-        {
-            dal.addOrder(g.Copy(), hu.Copy());
-        }
-        public bool checkHostingUnitDetails(HostingUnit hostingUnit)
-        {
-            if (hostingUnit.Children < 0 || hostingUnit.Adults < 0)
-                throw new OurException("מספר ילדים ומבוגרים חייב להיות גדול מ0");
-            if (hostingUnit.Children == 0 && hostingUnit.Adults == 0)
-                throw new OurException("מספר הנופשים חייב להיות גדול מ0");
-            if (hostingUnit.area < 1 || hostingUnit.area > 5)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (hostingUnit.Type < 1 || hostingUnit.Type > 5)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (hostingUnit.Meals != 0 && hostingUnit.Meals != 2 && hostingUnit.Meals != 3)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (hostingUnit.pricePerNight <= 0)
-                throw new OurException("מחיר חייב להיות גדול מ0");
-            if (!checkFhoneNumber(hostingUnit.Owner.FhoneNumber))
-                throw new OurException("מספר טלפון לא תקין");
-            if (!checkName(hostingUnit.Owner.PrivateName) || !checkName(hostingUnit.Owner.FamilyName))
-                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
-            if (!checkName(hostingUnit.city))
-                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
-            if (!checkName(hostingUnit.Owner.BankBranchDetails.BranchCity))
-                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
-            //checkBankDitails(hostingUnit);
-            return true;
-        }
+
         private bool checkFhoneNumber(int fNumber)
         {
             string fhoneNumber = "" + fNumber;
@@ -541,35 +474,121 @@ namespace BL
             }
             return true;
         }
-        private bool checkGuestRequestDetails(GuestRequest guestRequest)
+        /// <summary>
+        /// look for hostung unit suit for geus request 
+        /// </summary>
+        /// <param name="guestrequest"></param>
+        /// <returns></returns>
+        public List<HostingUnit> suitble(GuestRequest guestrequest)
         {
-            legitDates(guestRequest);
-            if (guestRequest.Children < 0 || guestRequest.Adults < 0)
-                throw new OurException("מספר מבוגרים וילדים לא יכול להיות שלילי");
-            if (guestRequest.Children == 0 && guestRequest.Adults == 0)
-                throw new OurException("מספר הנופשים חייב להיות גדול מ0");
-            checkNecessityEnum(guestRequest.airCondition);
-            if (guestRequest.Area < 1 || guestRequest.Area > 5)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            checkNecessityEnum(guestRequest.ChildrensAttractions);
-            checkNecessityEnum(guestRequest.flatTv);
-            checkNecessityEnum(guestRequest.Jacuzzy);
-            checkNecessityEnum(guestRequest.Pool);
-            checkNecessityEnum(guestRequest.Garden);
-            checkNecessityEnum(guestRequest.spa);
-            if (guestRequest.status < 1 && guestRequest.status > 5)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (guestRequest.Type < 1 && guestRequest.Type > 5)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (!checkName(guestRequest.PrivateName) || !checkName(guestRequest.FamilyName))
-                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
+            HostingUnit hostingunit = new HostingUnit();
+            var hostingUnitList = from item in GetAllHostingUnits()
+                                  where wantFilter(guestrequest, item).All(f => f(guestrequest, item)) && checkDates(guestrequest, item)
+                                  select item;
+
+            return hostingUnitList.ToList();
+        }
+
+        /// <summary>
+        /// chck if the dates empty
+        /// </summary>
+        /// <param name="guestrequest"></param>
+        /// <param name="hostingunit"></param>
+        /// <returns></returns>
+        public bool checkDates(GuestRequest guestrequest, HostingUnit hostingunit)
+        {
+            // check if all is proper
+            for (DateTime tempDate = guestrequest.EntryDate;
+                tempDate < guestrequest.ReleaseDate;
+                tempDate = tempDate.AddDays(1))
+            {
+                if (hostingunit.Diary[tempDate.Month - 1, tempDate.Day - 1])
+                    return false; // if once wrong instant return false.
+            }
+
             return true;
         }
-        private void checkNecessityEnum(int neecessity)
+
+
+
+        #endregion
+
+        private BL_imp()
         {
-            if (neecessity < 1 || neecessity > 3)
-                throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 3");
+            //  dal.restartLists();            
+            new Thread(UpdateAllOrders);
         }
+
+        public static BL_imp getBl()
+        {
+            if (bl == null)
+                bl = new BL_imp();
+            return bl;
+        }
+
+        
+        public bool craditAuthorization(Host h, Order order)
+        {
+            if (h.CollectionClearance)
+            {
+                order.status = (int)Status.SentMail;
+                return true;
+            }
+            return false;
+        }
+
+       
+
+        public List<BankBranch> GetAllBankBranch()
+        {
+            return dal.GetAllBankBranch();
+        }
+
+        public List<GuestRequest> GetAllGuests()
+        {
+            try
+            {
+                return dal.getAllGuests();
+            }
+            catch (OurException ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+
+        public List<HostingUnit> GetAllHostingUnits()
+        {
+
+            try
+            {
+                return dal.GetAllHostingUnits();
+            }
+            catch (OurException ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public List<Order> getAllOrder()
+        {
+
+            try
+            {
+                return dal.getAllOrder();
+            }
+            catch (OurException ex)
+            {
+
+                throw ex;
+            }
+        }
+
+       
+       
         //private void checkBankDitails(HostingUnit hostingUnit)//בדיקה של תנאי הבנק
         //{
         //    if(!dal.GetAllBankBranch().Exists(x=>x.BankNumber==hostingUnit.Owner.BankBranchDetails.BankNumber
