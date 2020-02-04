@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using System.Threading;
+using System.Windows.Threading;
+using System.Net.Mail;
 using BE;
 using BL;
 
@@ -22,14 +25,17 @@ namespace PLWPF
     /// </summary>
     public partial class HostingUnitManage : Window
     {
+        static public bool PasTrue = false;
         BL_imp bl = BL_imp.getBl();
         HostingUnit hostingunit = new HostingUnit();
         Host owner = new Host();
         BankBranch BankBranchDetails = new BankBranch();
+        ObservableCollection<bruches> AllBrunchs = new ObservableCollection<bruches>();
         public HostingUnitManage()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            DataContext = AllBrunchs;
         }
 
         private void AddOrUpdate_Click(object sender, RoutedEventArgs e)
@@ -45,6 +51,8 @@ namespace PLWPF
             if (bl.hostingUnitExist(key) != null)
             {
                 hostingunit = bl.hostingUnitExist(key);
+                owner = hostingunit.Owner;
+                BankBranchDetails = hostingunit.Owner.BankBranchDetails;
                 fillAllFields();
                 delete.IsEnabled = true;
                 update.IsEnabled = true;
@@ -61,14 +69,31 @@ namespace PLWPF
         {
             int isInt;
             object key;
-
+            PasTrue = false;
             if (!string.IsNullOrWhiteSpace(hostingUnitName.Text))
                 key = hostingUnitName.Text;
             else if (!string.IsNullOrWhiteSpace(hostingUnitKey.Text) && int.TryParse(hostingUnitKey.Text, out isInt))
                 key = hostingUnitKey.Text;
             else
+
                 throw new OurException("ERROR");
-            bl.deleteHostingUnit(hostingunit.hostingUnitKey);
+            try
+            {
+                Password pas = new Password();
+                pas.ShowDialog();
+                if (PasTrue)
+                {
+                    PasTrue = false;
+                    bl.deleteHostingUnit(hostingunit.hostingUnitKey);
+                    MessageBox.Show("יחידת נופש נמחקה");
+                }
+                
+            }
+            catch(OurException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            Close();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -97,39 +122,63 @@ namespace PLWPF
 
         private void Update_Click(object sender, RoutedEventArgs e)
         {
+            PasTrue = false;
             if (checkIfAllFildesAreFilled() && checkIfAllComboboxAreFilled())
-                bl.updateHostingUnit(hostingunit);
+            {
+                hostingunit.Owner = owner;
+                hostingunit.Owner.BankBranchDetails = BankBranchDetails;
+                try
+                {
+                    Password pas = new Password();
+                    pas.ShowDialog();
+                    if (PasTrue)
+                    {
+                        PasTrue = false;
+                        bl.updateHostingUnit(hostingunit);
+                        MessageBox.Show("יחידת נופש עודכנה");
+                    }
+
+                    Close();
+                }
+                catch (OurException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+                MessageBox.Show("שדות לא מלאים");
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            var textBoxes = grid.Children.OfType<TextBox>();
-            foreach (var item in textBoxes)
+            var ComboBoxes = grid.Children.OfType<ComboBox>();
+            foreach (var item in ComboBoxes)
             {
-                item.Clear();
+                item.SelectedItem = null;
             }
             var checkBoxes = grid.Children.OfType<CheckBox>();
             foreach (var item in checkBoxes)
             {
                 item.IsChecked = false;
             }
-            var ComboBoxes = grid.Children.OfType<ComboBox>();
-            foreach (var item in ComboBoxes)
+            var textBoxes = grid.Children.OfType<TextBox>();
+            foreach (var item in textBoxes)
             {
-                item.SelectedItem = null;
+                item.Clear();
             }
             hostingUnitKey.IsEnabled = true;
 
         }
         private void fillAllFields()
         {
+            hostingUnitKey.Text = hostingunit.hostingUnitKey.ToString();
             hostingUnitName.Text = hostingunit.HostingUnitName;
             privateName.Text = hostingunit.Owner.PrivateName;
             familyName.Text = hostingunit.Owner.FamilyName;
             id.Text = hostingunit.Owner.HostId.ToString();
             fhoneNumber.Text = hostingunit.Owner.FhoneNumber.ToString();
             email.Text = hostingunit.Owner.MailAddress;
-            bankName.Text = hostingunit.Owner.BankBranchDetails.BankName;
+            fillBankName();
             bankNumber.Text = hostingunit.Owner.BankBranchDetails.BankNumber.ToString();
             brunchNumber.Text = hostingunit.Owner.BankBranchDetails.BranchNumber.ToString();
             BranchAddress.Text = hostingunit.Owner.BankBranchDetails.BranchAddress;
@@ -169,6 +218,16 @@ namespace PLWPF
             bool invalid = grid.Children.OfType<TextBox>()
      .Where(t => t.IsEnabled)
      .Any(t => string.IsNullOrWhiteSpace(t.Text));
+            try
+            {
+                MailAddress temp = new MailAddress(email.Text);
+            }
+            catch 
+            {
+                email.Background = Brushes.Red;
+                email.Clear();
+                return false;                
+            }
             if (invalid)
                 return false;
             return true;
@@ -288,8 +347,9 @@ namespace PLWPF
                 if (bl.GetAllBankBranch().Exists(x => x.BranchNumber.ToString() == brunchNumber.Text))
                 {
                     BankBranchDetails.BranchNumber = BrunchNum;
-                    setBankAdress();
+                    //setBankAdress();
                     BankBranchDetails.BranchAddress = BranchAddress.Text;
+                    BankBranchDetails.BranchCity = BranchCity.Text;
                 }
                 else
                     MessageBox.Show("מספר סניף לא קיים");
@@ -297,7 +357,7 @@ namespace PLWPF
             else if (!string.IsNullOrWhiteSpace(brunchNumber.Text))
             {
                 MessageBox.Show("ניתן למלא רק מספרים");
-                brunchNumber.Clear();
+                //  brunchNumber.Clear();
             }
         }
 
@@ -402,12 +462,26 @@ namespace PLWPF
         }
         private void setBankNumber()
         {
-            bankNumber.Text = bl.GetAllBankBranch().Find(x => x.BankName == bankName.Text).BankNumber.ToString();
+            List<BankBranch> AllBanks = bl.GetAllBankBranch();
+            //if (!string.IsNullOrWhiteSpace(bankName.Text) && AllBanks.Count != 0)
+            //    bankNumber.Text = AllBanks.Find(x => x.BankName == bankName.Text).BankNumber.ToString();
+            bankNumber.Dispatcher.Invoke(() =>
+            {
+                while (AllBanks.Count == 0)
+                {
+                    Thread.Sleep(1000);
+                    AllBanks = bl.GetAllBankBranch();
+                    setBankNumber();
+                }
+                if (!string.IsNullOrWhiteSpace(bankName.Text) && AllBanks.Count != 0)
+                {
+                    bankNumber.Text = AllBanks.Find(x => x.BankName == bankName.Text).BankNumber.ToString();
+                    BankBranchDetails.BankNumber = int.Parse(bankNumber.Text);
+                }
+            });
+
         }
-        private void setBankAdress()
-        {
-            BranchAddress.Text = bl.GetAllBankBranch().Find(x => x.BranchNumber.ToString() == brunchNumber.Text).BranchAddress;
-        }
+
         private void checkBnakDetials()
         {
             var bankList = bl.GetAllBankBranch();
@@ -420,22 +494,102 @@ namespace PLWPF
             }
             if (!bankList.Exists(x => x.BranchNumber.ToString() == brunchNumber.Text))
             {
-                brunchNumber.Clear();
+                //brunchNumber.Clear();
                 MessageBox.Show("לא קיים סניף עם הכתובת הזו");
             }
 
         }
+        public class bruches
+        {
+            public int number;
+            public string city, address;
+            public override string ToString()
+            {
+                return string.Format("" + number);
+            }
+        }
 
         private void BankName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(bankName.Text))
+            BankBranchDetails.BankName = bankName.Text;
+            new Thread(setBankNumber).Start();
+            // BranchCity.IsEnabled = true;
+            BankAccountNumber.IsEnabled = true;
+
+            var numbers = from item in bl.GetAllBankBranch()
+                          where item.BankName == bankName.Text
+                          select item;
+            foreach (var item in numbers)
             {
-                BankBranchDetails.BankName = bankName.Text;
-                setBankNumber();
-                BranchCity.IsEnabled = true;
-                bankNumber.IsEnabled = true;
-                BankAccountNumber.IsEnabled = true;
+                bruches adding = new bruches();
+                adding.number = item.BranchNumber;
+                BankBranchDetails.BankNumber = item.BranchNumber;
+                adding.city = item.BranchCity;
+                adding.address = item.BranchAddress;
+                AllBrunchs.Add(adding);
+            }
+            
+
+        }
+
+        private void BrunchNumber_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(brunchNumber.Text))
+            {
+                foreach (var item in AllBrunchs)
+                {
+                    if (brunchNumber.Text == ("" + item.number))
+                    {
+                        BranchCity.Text = item.city;
+                        BranchAddress.Text = item.address;
+                    }
+                }
             }
         }
+
+        private void BankName_LostFocus(object sender, RoutedEventArgs e)
+        {
+            BankBranchDetails.BankName = bankName.Text;
+            new Thread(setBankNumber).Start();
+            //BranchCity.IsEnabled = true;
+            BankAccountNumber.IsEnabled = true;
+
+            var numbers = bl.GetAllBankBranch().Where(x => x.BankName == bankName.Text).
+                OrderBy(x => x.BranchNumber);
+            //var numbers = from item in bl.GetAllBankBranch()
+            //              where item.BankName == bankName.Text
+            //              select item;
+            AllBrunchs.Clear();
+            foreach (var item in numbers)
+            {
+                bruches adding = new bruches();
+                adding.number = item.BranchNumber;
+                adding.city = item.BranchCity;
+                adding.address = item.BranchAddress;
+                AllBrunchs.Add(adding);
+            }
+            
+        }
+        private void fillBankName()
+        {
+            bankName.Text = hostingunit.Owner.BankBranchDetails.BankName;
+            var numbers = bl.GetAllBankBranch().Where(x => x.BankName == bankName.Text).
+                OrderBy(x => x.BranchNumber);
+            foreach (var item in numbers)
+            {
+                bruches adding = new bruches();
+                adding.number = item.BranchNumber;
+                adding.city = item.BranchCity;
+                adding.address = item.BranchAddress;
+                AllBrunchs.Add(adding);
+            }
+        }
+
+        private void BranchAddress_LostFocus(object sender, RoutedEventArgs e)
+        {
+            BankBranchDetails.BranchAddress = BranchAddress.Text;
+        }
+
     }
 }
+

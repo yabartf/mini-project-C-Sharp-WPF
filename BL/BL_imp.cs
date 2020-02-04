@@ -16,15 +16,15 @@ namespace BL
         DAL_Xml_imp dal = DAL_Xml_imp.getDal_XML();
         private static BL_imp bl = null;       
 
-        Thread UpdateOrders;
+        
         #region Order Functions
         public void UpdateAllOrders()
         {
             DateTime d = DateTime.Now;
-            d = d.AddDays(-30);
+            d = d.AddDays(-31);
             foreach (var item in getAllOrder())
             {
-                if (item.OrderDate.AddDays(30) < DateTime.Now && item.status == (int)Status.SentMail)
+                if (item.OrderDate < d && item.status != (int)Status.SentMail&&item.status!= (int)Status.Complate)
                 {
                     item.status = (int)Status.Faild;
                     updateOrder(item);
@@ -47,13 +47,33 @@ namespace BL
             {
                 dal.updateOrder(ord.Copy());
                 // check wich cant to exist from now.
-                var faild_order = from item in hostingUnitByOrder(ord).orders
-                                  where IsCommonDates(guestRequestByOrder(ord), guestRequestByOrder(item))
-                                  select item;
-                foreach (var item in faild_order)
+                if (ord.status == (int)Status.Complate || ord.status == (int)Status.SentMail)
                 {
-                    item.status = (int)Status.Faild;
-                    dal.updateOrder(item.Copy());
+                    var faild_order = getAllOrder().Where(item => item.GuestRequestKey == ord.GuestRequestKey && item.OrderKey != ord.OrderKey).ToList();
+                                      
+                    foreach (var item in faild_order)
+                    {
+                        item.status = (int)Status.Faild;
+                        dal.updateOrder(item.Copy());
+                    }
+                    foreach (var item in GetAllHostingUnits())
+                    {
+                       Order orderToUpdat = item.orders.FirstOrDefault(x => x.GuestRequestKey == ord.GuestRequestKey && x.OrderKey != ord.OrderKey);
+                        {
+                            if (orderToUpdat != null)
+                            {
+                                orderToUpdat.status = (int)Status.Faild;
+                                dal.updateHostingUnit(item);
+                            }
+                        }
+                        orderToUpdat = item.orders.FirstOrDefault(x => x.OrderKey == ord.OrderKey);
+                        if (orderToUpdat != null)
+                        {
+                            orderToUpdat.status = ord.status;
+                            dal.updateHostingUnit(item);
+                        }
+                    }
+                    updateDiary(hostingUnitByOrder(ord), guestRequestByOrder(ord));
                 }
             }
             catch (OurException)
@@ -102,6 +122,8 @@ namespace BL
                 foreach (var item in dal.GetAllHostingUnits())
                     if (item.hostingUnitKey == inputKey)
                     {
+                        if (item.orders.Exists(x => x.status == (int)Status.NotAddressed))
+                            throw new OurException("לא ניתן למחוק יחידת שקיימות הזמנות פתוחות לגבה");
                         dal.deleteHostingUnit(item.Copy());
                         return true;
                     }
@@ -128,13 +150,8 @@ namespace BL
                 throw new OurException("מחיר חייב להיות גדול מ0");
             if (!checkFhoneNumber(hostingUnit.Owner.FhoneNumber))
                 throw new OurException("מספר טלפון לא תקין");
-            if (!checkName(hostingUnit.Owner.PrivateName) || !checkName(hostingUnit.Owner.FamilyName))
-                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
-            if (!checkName(hostingUnit.city))
-                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
-            if (!checkName(hostingUnit.Owner.BankBranchDetails.BranchCity))
-                throw new OurException("שם עיר חייב להיות מורכב מאותיות בלבד");
-            //checkBankDitails(hostingUnit);
+            if(!checkBankDitails(hostingUnit.Owner.BankBranchDetails))
+                throw new OurException("פרטי בנק לא נכונים");
             return true;
         }
 
@@ -227,8 +244,6 @@ namespace BL
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
             if (guestRequest.Type < 1 && guestRequest.Type > 5)
                 throw new OurException("מספר לא תקין, יכול לקבל ערכים מ1 עד 5");
-            if (!checkName(guestRequest.PrivateName) || !checkName(guestRequest.FamilyName))
-                throw new OurException("שם חייב להיות מורכב מאותיות בלבד");
             return true;
         }
         private void checkNecessityEnum(int neecessity)
@@ -266,29 +281,47 @@ namespace BL
 
         public Dictionary<int, List<GuestRequest>> groupGuestRequestByArea()
         {
-            var gr = dal.getAllGuests().GroupBy(s => s.Area).ToDictionary(x => x.Key, x => x.ToList());
-            return gr;
+            return dal.getAllGuests().GroupBy(s => s.Area).ToDictionary(x => x.Key, x => x.ToList());
         }
+        public Dictionary<int,List<Order>> GroupOrdersByGuestRequest()
+        {
+            return dal.getAllOrder().GroupBy(s => s.GuestRequestKey).ToDictionary(x => x.Key, x => x.ToList());
+        }
+        public Dictionary<int, List<Order>> GroupOrdersByStatus()
+        {
+            return dal.getAllOrder().GroupBy(s => s.status).ToDictionary(x => x.Key, x => x.ToList());
+        }
+        public Dictionary<int, List<Order>> GroupOrdersByHostingUnit()
+        {
+            return dal.getAllOrder().GroupBy(s => s.HostingUnitKey).ToDictionary(x => x.Key, x => x.ToList());
+        }
+
 
         public Dictionary<int, List<GuestRequest>> groupGuestRequestByNumOfVacationer()
         {
-            var gr = dal.getAllGuests().GroupBy(s => (s.Children + s.Adults))
+            return dal.getAllGuests().GroupBy(s => (s.Children + s.Adults))
                 .OrderBy(x => x.Key)
                 .ToDictionary(x => x.Key, x => x.ToList());
-            return gr;
         }
         public List<Host> groupOwnersBYNumOfHostingUnit()
         {
-            var owners = GetAllHostingUnits().GroupBy(x => x.Owner)
-                .ToDictionary(x => x.Key).OrderBy(x => x.Value.Count()).ToDictionary(x => x.Key);
-            return owners.Select(x => x.Key).ToList();
+            return GetAllHostingUnits().GroupBy(x => x.Owner)
+                .ToDictionary(x => x.Key).OrderBy(x => x.Value.Count()).ToDictionary(x => x.Key).Select(x => x.Key).ToList();
         }
-
+        public Dictionary<int,List<HostingUnit>> GroupHOstingUnitByPricePerNight()
+        {
+            return dal.GetAllHostingUnits().GroupBy(s => s.pricePerNight).ToDictionary(x => x.Key, x => x.ToList());
+        }
+        public List<Order> OrdersOfHostingUnit(HostingUnit hu)
+        {
+            return (from i in getAllOrder()
+                    where i.HostingUnitKey == hu.hostingUnitKey
+                    select i).ToList();
+        }
         public Dictionary<int, List<HostingUnit>> groupHostingUnitByArea()
         {
 
-            var hostingUnitByArea = dal.GetAllHostingUnits().GroupBy(s => s.area).ToDictionary(x => x.Key, x => x.ToList());
-            return hostingUnitByArea;
+            return dal.GetAllHostingUnits().GroupBy(s => s.area).ToDictionary(x => x.Key, x => x.ToList());
         }
 
         /// <summary>
@@ -389,7 +422,7 @@ namespace BL
                     if (item.hostingUnitKey == order.HostingUnitKey)
                         return item.Copy();
                 }
-                throw new OurException();
+                throw new OurException("לא קיימות יחידות נופש הקשורות להזמנה");
             }
             catch (OurException ex)
             {
@@ -465,15 +498,7 @@ namespace BL
                 return true;
             return false;
         }
-        private bool checkName(string name)
-        {
-            for (int i = 0; i < name.Length; i++)
-            {
-                if ((name[i] > 122 || name[i] < 65) || (name[i] > 90 && name[i] < 97))
-                    return false;
-            }
-            return true;
-        }
+       
         /// <summary>
         /// look for hostung unit suit for geus request 
         /// </summary>
@@ -513,9 +538,9 @@ namespace BL
 
         #endregion
 
+        System.ComponentModel.BackgroundWorker b;
         private BL_imp()
-        {
-            //  dal.restartLists();            
+        {            
             new Thread(UpdateAllOrders);
         }
 
@@ -589,11 +614,21 @@ namespace BL
 
        
        
-        //private void checkBankDitails(HostingUnit hostingUnit)//בדיקה של תנאי הבנק
-        //{
-        //    if(!dal.GetAllBankBranch().Exists(x=>x.BankNumber==hostingUnit.Owner.BankBranchDetails.BankNumber
-        //    &&x.BankName==hostingUnit.Owner.BankBranchDetails.BankName))
-        //}
+        private bool checkBankDitails(BankBranch bankDitails)//בדיקה של תנאי הבנק
+        {
+            return GetAllBankBranch().Exists(x => x.BankName == bankDitails.BankName
+             && x.BankNumber == bankDitails.BankNumber
+             && x.BranchAddress == bankDitails.BranchAddress
+             && x.BranchCity == bankDitails.BranchCity);
+                
+        }
+        private void updateDiary(HostingUnit hostingunit, GuestRequest guestRequest)
+        {
+            DateTime dateTime = guestRequest.EntryDate;
+            for (; dateTime < guestRequest.ReleaseDate; dateTime = dateTime.AddDays(1))
+                hostingunit.Diary[dateTime.Month, dateTime.Day] = true;
+            updateHostingUnit(hostingunit);
+        }
     }
 }
 

@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Runtime.CompilerServices;
 using BE;
 using BL;
+using System.Net.Mail;
 
 namespace PLWPF
 {
@@ -260,6 +261,16 @@ namespace PLWPF
             bool invalid = grid.Children.OfType<TextBox>()
      .Where(t => t.IsEnabled)
      .Any(t => string.IsNullOrWhiteSpace(t.Text));
+            try
+            {
+                MailAddress mail = new MailAddress(Mail.Text);
+            }
+            catch
+            {                
+                Mail.Background = Brushes.Red;
+                Mail.Clear();
+                return false;
+            }
             if (invalid)
                 return false;
             return true;

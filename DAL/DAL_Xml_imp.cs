@@ -22,7 +22,9 @@ namespace DAL
         private string hostingUnitsPath = @"hostingUnits.xml";
         private string configPath = @"config.xml";
         XElement orderRoot = new XElement("orders");
+        //XDocument DocorderRoot = XDocument.Load("Orders.xml");
         XElement hostingsRoot = new XElement("hosting_uints");
+        XElement guestRequestRoot = new XElement("guest_request");
         XElement configRoot = new XElement("gonfigs");
         private static DAL_Xml_imp instance = null;
         List<BankBranch> bankBranches = new List<BankBranch>();
@@ -34,14 +36,24 @@ namespace DAL
         }
         private DAL_Xml_imp()
         {
-
             if (!File.Exists(OrdersPath))
             {
                 orderRoot = new XElement("orders");
                 orderRoot.Save(OrdersPath);
             }
             else
-                orderRoot = XElement.Load(OrdersPath);
+            orderRoot = XElement.Load(OrdersPath);
+            if (!File.Exists(GuestRequestsPath))
+            {
+                guestRequestRoot = new XElement("guest_request");
+                guestRequestRoot.Save(GuestRequestsPath);
+            }
+            if (!File.Exists(hostingUnitsPath))
+            {
+                hostingsRoot = new XElement("hosting_uints");
+                hostingsRoot.Save(hostingUnitsPath);
+            }
+            // saveListToXML(DataSource.allHostingUnits, hostingUnitsPath);
 
             if (!File.Exists(configPath))
             {
@@ -60,9 +72,9 @@ namespace DAL
                 configRoot = XElement.Load(configPath);
                 updateCofingortion();
             }
-            
+            loadFromXml();
             new Thread(downloadBanks).Start();
-
+            
         }
         #region Order Functions.
         public void addOrder(GuestRequest g, List<HostingUnit> suites)
@@ -87,6 +99,7 @@ namespace DAL
                 XElement ordDate = new XElement("orderDate", ord.OrderDate);
                 XElement order = new XElement("order", HosKey, GueKey, ordKey, stat, creDate, ordDate);
                 orderRoot.Add(order);
+                DataSource.allOrders.Add(ord);
             }
             orderRoot.Save(OrdersPath);
         }
@@ -95,15 +108,28 @@ namespace DAL
         {
             try
             {
-                XElement oldOrder = (from item in orderRoot.Elements()
-                                     where int.Parse(item.Element("orderKey").Value) == ord.OrderKey
-                                     select item).FirstOrDefault();
-                if (oldOrder == null)
+                Order old = DataSource.allOrders.Where(x => x.OrderKey == ord.OrderKey).FirstOrDefault();
+                if (old == null)
                     throw new OurException();
-                if (ord.status == (int)Status.SentMail && oldOrder.Element("status").Value == "NotAddressed")
-                    oldOrder.Element("orderDate").Value = DateTime.Now.ToString();
-                oldOrder.Element("status").Value = "" + ord.status;
+                DataSource.allOrders.Remove(old);
+                DataSource.allOrders.Add(ord);
+                hostingUnitExist(ord.HostingUnitKey).orders.Find(x => x.OrderKey == ord.OrderKey).status = ord.status;
+                if (ord.status == (int)Status.Complate || ord.status == (int)Status.SentMail && old.status==(int)Status.NotAddressed)
+                    SetDairy(ord);
+                foreach (var order in orderRoot.Elements())
+                {
+                    if(order.Element("orderKey").Value==""+ord.OrderKey)
+                    {
+
+                        order.Element("status").Value = "" + ord.status;
+                        if (ord.status == (int)Status.SentMail || ord.status == (int)Status.Complate && old.status == (int)Status.NotAddressed)
+                            order.Element("orderDate").Value = DateTime.Now.ToString();
+                        
+                    }
+                }
+               
                 orderRoot.Save(OrdersPath);
+
             }
             catch (OurException)
             {
@@ -120,7 +146,6 @@ namespace DAL
         {
             try
             {
-                DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
                 HostingUnit item = (from p in DataSource.allHostingUnits
                                     where p == hu
                                     select p).FirstOrDefault();
@@ -128,9 +153,9 @@ namespace DAL
                     throw new OurException();
                 else
                 {
-                    hu.hostingUnitKey = ++Configuration.hostingUnitKey;
-                    //hostingsRoot.Element("hostingUnitKey").Value = "" + Configuration.hostingUnitKey;
-                    DataSource.allHostingUnits.Add(item);
+                    hu.hostingUnitKey = Configuration.hostingUnitKey++;
+                    configRoot.Element("hostingUnitKey").Value = Configuration.hostingUnitKey.ToString();                    
+                    DataSource.allHostingUnits.Add(hu);
                     saveListToXML(DataSource.allHostingUnits, hostingUnitsPath);
                 }
             }
@@ -146,17 +171,11 @@ namespace DAL
         {
             try
             {
-                DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
-                XElement item = (from p in loadListFromXML<XElement>(hostingUnitsPath)
-                                 where int.Parse(p.Element("hostingUnitKey").Value) == hu.hostingUnitKey
-                                 select p).FirstOrDefault();
-                if (item == null)
+                HostingUnit huToDelet = DataSource.allHostingUnits.FirstOrDefault(x => x.hostingUnitKey == hu.hostingUnitKey);
+                if(huToDelet==null)
                     throw new OurException();
-                else
-                {
-                    item.Remove();
-                    hostingsRoot.Save(hostingUnitsPath);
-                }
+                DataSource.allHostingUnits.Remove(huToDelet);
+                saveListToXML(DataSource.allHostingUnits, hostingUnitsPath);
             }
             catch (OurException)
             {
@@ -170,9 +189,8 @@ namespace DAL
         {
             try
             {
-                DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
-                HostingUnit item = (from p in GetAllHostingUnits()
-                                    where p == hu
+                HostingUnit item = (from p in DataSource.allHostingUnits
+                                    where p.hostingUnitKey == hu.hostingUnitKey
                                     select p).FirstOrDefault();
                 if (item == null)
                     throw new OurException();
@@ -198,10 +216,9 @@ namespace DAL
         {
             try
             {
-                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
                 foreach (var item in DataSource.allGuests)
                 {
-                    if (g == item)
+                    if (g== item)
                     {
                         throw new OurException("this guest request is all ready in exist.");
                     }
@@ -222,7 +239,6 @@ namespace DAL
         {
             try
             {
-                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
                 foreach (var item in DataSource.allGuests)
                     if (guestrequest == item)
                     {
@@ -268,7 +284,8 @@ namespace DAL
 
         private static List<T> loadListFromXML<T>(string path)
         {
-            if (File.Exists(path))
+            XDocument xdoc = XDocument.Load(path);
+            if (xdoc.Descendants().Count()>1)
             {
                 List<T> list;
                 XmlSerializer x = new XmlSerializer(typeof(List<T>));
@@ -282,35 +299,18 @@ namespace DAL
               
         public List<HostingUnit> GetAllHostingUnits()
         {
-            DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
-            List<HostingUnit> listToback = DataSource.allHostingUnits;
-            return listToback.Copy();
+            return DataSource.allHostingUnits.Copy();
         }
 
 
 
         public List<GuestRequest> getAllGuests()
         {
-            DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
-            List<GuestRequest> listToback = DataSource.allGuests;
-            return listToback.Copy();
+            return DataSource.allGuests.Copy();
         }
 
         public List<Order> getAllOrder()
-        {
-            List<XElement> allOrders = (from item in orderRoot.Elements()
-                                        select item).ToList();
-            foreach (var item in allOrders)
-            {
-                Order ord = new Order();
-                ord.HostingUnitKey = int.Parse(item.Element("hostingUnitKey").Value);
-                ord.OrderKey = int.Parse(item.Element("orderKey").Value);
-                ord.GuestRequestKey = int.Parse(item.Element("guestRequestKey").Value);
-                ord.OrderDate = DateTime.Parse(item.Element("orderDate").Value);
-                ord.status = int.Parse(item.Element("status").Value);
-                ord.CreateDate = DateTime.Parse(item.Element("createDate").Value);
-                DataSource.allOrders.Add(ord);
-            }
+        {            
             return DataSource.allOrders;
         }
         public void SetDairy(Order ord)
@@ -395,6 +395,7 @@ namespace DAL
 
         public List<BankBranch> GetAllBankBranch()
         {
+
             return bankBranches;
         }
         private void downloadBanks()
@@ -407,15 +408,25 @@ namespace DAL
                 string xmlServerPath = @"https://www.boi.org.il/he/BankingSupervision/BanksAndBranchLocations/Lists/BoiBankBranchesDocs/atm.xml";
                 wc.DownloadFile(xmlServerPath, xmlLocalPath);
                 XElement banksXml = new XElement(xmlLocalPath);
-                foreach (var item in banksXml.Elements())
+                XDocument banksXmlDoc = XDocument.Load(xmlLocalPath);
+                foreach (var item in banksXmlDoc.Elements())
                 {
-                    BankBranch temp = new BankBranch();
-                    temp.BankName = item.Element("שם_בנק").Value;
-                    temp.BankNumber = int.Parse(item.Element("קוד_בנק").Value);
-                    temp.BranchCity = item.Element("ישוב").Value;
-                    temp.BranchAddress = item.Element("כתובת_ה-ATM").Value;
-                    temp.BranchNumber = int.Parse(item.Element("קוד_סניף").Value);
-                    allBancks.Add(temp);
+                    foreach (var bank in item.Elements())
+                    {
+                        BankBranch temp = new BankBranch();
+                        foreach (var bankDitails in bank.Elements())
+                        {
+                            temp.BankName = bankDitails.Name == "שם_בנק" ? bankDitails.Value : temp.BankName;
+                            temp.BankNumber = bankDitails.Name == "קוד_בנק" ? int.Parse(bankDitails.Value) : temp.BankNumber;
+                            temp.BranchCity = bankDitails.Name == "ישוב" ? bankDitails.Value : temp.BranchCity;
+                            temp.BranchAddress = bankDitails.Name == "כתובת_ה-ATM" ? bankDitails.Value : temp.BranchAddress;
+                            temp.BranchNumber = bankDitails.Name == "קוד_סניף" ? int.Parse(bankDitails.Value) : temp.BranchNumber;
+
+                        }
+                        //if(!allBancks.Exists(x=>x.BankNumber == temp.BranchNumber))
+                           allBancks.Add(temp);
+                    }
+
                 }
             }
             catch (Exception)
@@ -427,12 +438,34 @@ namespace DAL
             {
                 wc.Dispose();
             }
-            var sortBanks = allBancks.GroupBy(s => s.BranchAddress)
+            var sortBanks = allBancks.GroupBy(s => s.BranchNumber)
                .Select(s => s.FirstOrDefault()).ToList();
             bankBranches = sortBanks;
+            Thread.Sleep(1000);
         }
+        private void loadFromXml()
+        {
+            XDocument xdoc = XDocument.Load(hostingUnitsPath);
+            if (xdoc.Descendants().Count() != 0)
+                DataSource.allHostingUnits = loadListFromXML<HostingUnit>(hostingUnitsPath);
+            xdoc = XDocument.Load(GuestRequestsPath);
+            if (xdoc.Descendants().Count() != 0)
+                DataSource.allGuests = loadListFromXML<GuestRequest>(GuestRequestsPath);
 
+            foreach (var item in orderRoot.Elements())
+            {
+                Order ord = new Order();
+                ord.HostingUnitKey = int.Parse(item.Element("hostingUnitKey").Value);
+                ord.OrderKey = int.Parse(item.Element("orderKey").Value);
+                ord.GuestRequestKey = int.Parse(item.Element("guestRequestKey").Value);
+                ord.OrderDate = DateTime.Parse(item.Element("orderDate").Value);
+                ord.status = int.Parse(item.Element("status").Value);
+                ord.CreateDate = DateTime.Parse(item.Element("createDate").Value);
+                DataSource.allOrders.Add(ord);
+            }
 
+        }
+       
     }
 }
 

@@ -21,7 +21,7 @@
         <Style TargetType="TextBox" >
             <Setter Property="Background" Value="Beige"/>
             <Setter Property="Foreground" Value="Brown"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="12"/>
         </Style>
 
     </Window.Resources>
@@ -72,29 +72,20 @@
         <TextBlock Text=":טלפון" Grid.Column="1" Grid.Row="2" Margin="166.2,27.2,188.6,20.2" RenderTransformOrigin="3.631,0.934" />
         <TextBox Name="id" LostFocus="Id_LostFocus" Grid.Column="1" Grid.Row="2" Width="70" Height="20" IsEnabled="False" Margin="236.6,28,100.6,16" VerticalAlignment="Center" RenderTransformOrigin="-0.589,0.473"/>
         <TextBlock Text=":.ת.ז" Grid.Row="2" Margin="309.6,31,69.6,16" RenderTransformOrigin="3.631,0.934" Grid.Column="1" />
-        <TextBox Name="email" LostFocus="Email_LostFocus" Grid.Column="1" Grid.Row="3" Width="70" Height="20" IsEnabled="False" Margin="234.6,8,102.6,8" VerticalAlignment="Center" RenderTransformOrigin="0.984,0.509"/>
+        <TextBox Name="email" LostFocus="Email_LostFocus" Grid.Column="1" Grid.Row="3" Width="70" Height="20" IsEnabled="False" Margin="234.6,8,102.6,8" VerticalAlignment="Center" RenderTransformOrigin="0.984,0.509" />
         <TextBlock  Text=":מייל" Grid.Column="1" Grid.Row="3" Margin="309.6,13,45.6,5" VerticalAlignment="Center" Height="18" RenderTransformOrigin="0.018,0.573"/>
 
         <TextBlock Grid.Column="1" Grid.Row="4" Text=":פרטי חשבון" HorizontalAlignment="Right" Margin="0,6,45.6,42" />
-        <ComboBox Name="bankName"  Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="235.6,33,101.6,11" RenderTransformOrigin="0.516,-0.018" SelectionChanged="BankName_SelectionChanged">
+        <ComboBox Name="bankName"  Grid.Column="1" Grid.Row="4" Width="70" Height="20" IsEnabled="False" Margin="235.6,33,101.6,11" RenderTransformOrigin="0.516,-0.018" LostFocus="BankName_LostFocus">
             <ComboBoxItem>
                 <ComboBoxItem.Content>
+                    
                     בנק דיסקונט לישראל בע"מ
                 </ComboBoxItem.Content>
             </ComboBoxItem>
             <ComboBoxItem>
                 <ComboBoxItem.Content>
                     בנק אוצר החייל בע"מ
-                </ComboBoxItem.Content>
-            </ComboBoxItem>
-            <ComboBoxItem>
-                <ComboBoxItem.Content>
-                    יובנק בע"מ
-                </ComboBoxItem.Content>
-            </ComboBoxItem>
-            <ComboBoxItem>
-                <ComboBoxItem.Content>
-                    הבנק הבינלאומי הראשון לישראל בע"מ
                 </ComboBoxItem.Content>
             </ComboBoxItem>
             <ComboBoxItem>
@@ -135,10 +126,10 @@
 
 
 
-        <TextBox Name="brunchNumber" LostFocus="BrunchNumber_LostFocus" Grid.Column="1"
+        <ComboBox Name="brunchNumber" ItemsSource="{Binding}" LostFocus="BrunchNumber_LostFocus" Grid.Column="1"
                      Grid.Row="5"
                          Width="70"
-                        Height="20" IsEnabled="False" Margin="96.6,25,240.6,19"/>
+                        Height="20" IsEnabled="False" Margin="96.6,25,240.6,19" SelectionChanged="BrunchNumber_SelectionChanged"/>
         <Label Grid.Column="1"
                            Grid.Row="6"
                       Content=":מס חשבון" Margin="0,19,169.6,19" HorizontalAlignment="Right" VerticalAlignment="Center" Height="26" Width="71" RenderTransformOrigin="0.393,0.568" />
@@ -185,14 +176,14 @@
             <ComboBoxItem Content="מרכז"/>
             <ComboBoxItem Content="ירושלים"/>
         </ComboBox>
-        <TextBox Name="BranchAddress"  Grid.Column="1" Grid.Row="6" Width="70" Height="20" IsEnabled="False" Margin="234.6,19,102.6,25" RenderTransformOrigin="0.543,-0.245"/>
+        <TextBox Name="BranchAddress"  Grid.Column="1" Grid.Row="6" Width="70" Height="20" IsEnabled="False" Margin="234.6,19,102.6,25" RenderTransformOrigin="0.543,-0.245" LostFocus="BranchAddress_LostFocus"/>
         <TextBlock Text=":כתובת"  Grid.Column="1" Grid.Row="6" Margin="309.6,24,42.6,21"/>
         <TextBox Name="BranchCity" LostFocus="BranchCity_LostFocus" Grid.Column="1" Grid.Row="5" Width="70" Height="20" IsEnabled="False" Margin="236.6,24,100.6,20"/>
         <TextBlock Text=":עיר" Grid.Column="1" Grid.Row="5" Margin="309.6,25,57.6,20"/>
 
         <TextBox Name="chilldren" LostFocus="Chilldren_LostFocus" IsEnabled="False" Height="20" Width="20" Grid.Row="4" Margin="-10,15,105,0" />
         <Label Content=":מספר מבוגרים" Grid.Column="0" Grid.Row="4" Margin="300,25,9.4,11" />
-        <Label Content=":מספר ילדים" Grid.Column="0" Grid.Row="4" Margin="150,25,186.4,11"/>
+        <Label Content=":מספר ילדים" Grid.Column="0" Grid.Row="4" Margin="150,25,170.667,11"/>
         <TextBox Name="adults" LostFocus="Adults_LostFocus" Height="20" Width="20" Grid.Column="0" Grid.Row="4" IsEnabled="False" Margin="175,15,0,0"/>
         <WrapPanel Grid.Column="0" Grid.Row="6"  >
             <Button Name="delete" Content="מחיקה" Click="Delete_Click" Height="30" Width="70" IsEnabled="False" Margin="50,20,0,0"/>

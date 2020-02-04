@@ -13,5 +13,6 @@
         <Button Content="יחידות אירוח" Height="30" Background="Aqua" Foreground="Brown" FontSize="15" HorizontalAlignment="Left" Margin="297,53,0,0" VerticalAlignment="Top" Width="90" Click="ToHostings"/>
         <Button Content="דרישות לקוח" Height="30" Background="Aqua" Foreground="Brown" FontSize="15" HorizontalAlignment="Left" VerticalAlignment="Top" Width="90" Margin="392,53,0,0" Click="ToOwner"/>
         <Label Content="?מה ברצונך לצפות" Height="30"  Foreground="Brown" FontSize="15" HorizontalAlignment="Left" Margin="504,53,0,0" VerticalAlignment="Top" Width="139"/>
+        <Button Content="הזמנות" HorizontalAlignment="Left" Margin="202,53,0,0" VerticalAlignment="Top" Height="30" Background="Aqua" Foreground="Brown" FontSize="15" Width="90" Click="Button_Click"/>
     </Grid>
 </Window>

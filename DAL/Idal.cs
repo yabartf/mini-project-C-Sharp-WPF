@@ -20,12 +20,5 @@ namespace DAL
         List<GuestRequest> getAllGuests();
         List<Order> getAllOrder();
         List<BankBranch> GetAllBankBranch();
-
-
-
     }
-
-
-
-
 }
