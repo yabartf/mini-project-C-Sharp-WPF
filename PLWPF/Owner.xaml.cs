@@ -23,7 +23,7 @@ namespace PLWPF
     public partial class Owner : Window
     {
         private ObservableCollection<Guest_Requests> list = new ObservableCollection<Guest_Requests>();
-        private BL.BL_imp bl = BL.BL_imp.getBl();
+        IBL bl = FuctoryBl.getBl();
         private Guest_Requests guest = new Guest_Requests();
         public Owner()
         {

@@ -43,6 +43,7 @@ namespace PLWPF
 
         private void OrderManage_Click(object sender, RoutedEventArgs e)
         {
+            PasTrue = false;
             OrderManage orderManage = new OrderManage();
             Password pas = new Password();
             pas.ShowDialog();
@@ -53,6 +54,7 @@ namespace PLWPF
 
         private void owner(object sender, RoutedEventArgs e)
         {
+            PasTrue = false;
             OwnerWindow window = new OwnerWindow();
             Password pas = new Password();
             pas.ShowDialog();

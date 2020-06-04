@@ -36,5 +36,10 @@ namespace PLWPF
             AllHostingUnit allHostingUnitWindow = new AllHostingUnit();
             allHostingUnitWindow.ShowDialog();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            new AllOrders().ShowDialog();
+        }
     }
 }

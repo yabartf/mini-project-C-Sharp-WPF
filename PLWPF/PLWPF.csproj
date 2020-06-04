@@ -63,6 +63,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AllOrders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HostingUnitManage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -76,6 +80,9 @@
     </Compile>
     <Compile Include="AllHstingUnit.xaml.cs">
       <DependentUpon>AllHstingUnit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AllOrders.xaml.cs">
+      <DependentUpon>AllOrders.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

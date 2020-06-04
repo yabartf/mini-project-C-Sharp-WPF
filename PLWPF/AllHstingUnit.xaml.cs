@@ -22,7 +22,7 @@ namespace PLWPF
     /// </summary>
     public partial class AllHostingUnit : Window
     {
-        BL_imp bl = BL_imp.getBl();
+        IBL bl = FuctoryBl.getBl();
         private ObservableCollection<HostingUnit> list = new ObservableCollection<HostingUnit>();
         public AllHostingUnit()
         {

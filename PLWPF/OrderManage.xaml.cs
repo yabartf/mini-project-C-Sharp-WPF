@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using BE;
 using BL;
 using System.Net.Mail;
+using System.ComponentModel;
 
 namespace PLWPF
 {
@@ -23,28 +24,52 @@ namespace PLWPF
     public partial class OrderManage : Window
     {
 
-        private BL_imp bl = BL_imp.getBl();
+        IBL bl = FuctoryBl.getBl();
         private HostingUnit CurntHostingUnit = new HostingUnit();
-        private bool IsPressed = false, IsString = false;
+        private int coutOfOreder;
+        private bool IsPressed = false, IsString = false,haveOrders = false;
         Button[] button;
+        ListBoxItem[] boxItem;
+        BackgroundWorker MailSend;
+        GuestRequest ForMail;
 
         public OrderManage()
         {
             InitializeComponent();
             WindowOfOrder.Opacity = 0;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            MailSend = new BackgroundWorker();
+            MailSend.DoWork += DoMail;
+            MailSend.ProgressChanged += progressMail;
+            MailSend.RunWorkerCompleted += complateMail;
+            //MailSend.ReportProgress = true;
         }
+
+        private void complateMail(object sender, RunWorkerCompletedEventArgs e)
+        {
+            object result = e.Result;
+        }
+
+        private void progressMail(object sender, ProgressChangedEventArgs e)
+        {
+            int temp = e.ProgressPercentage;
+        }
+
+        private void DoMail(object sender, DoWorkEventArgs e)
+        {
+            SendMail();
+        }
+
         /// <summary>
-        /// print all order of the hosting unit. all ListBoxItem is `TextBox and Button.
+        /// print all order of the hosting unit. all ListBoxItem is TextBox and Button.
         /// </summary>
         private void PrintOrder()
         {
-            int i = 0;
-            ListBoxItem[] boxItem = new ListBoxItem[CurntHostingUnit.orders.Count];
-
-            foreach (var item in CurntHostingUnit.orders)
+            //int i = 0;
+            boxItem = new ListBoxItem[coutOfOreder];             
+            for (int i=0; i< coutOfOreder; i++)
             {
-                GuestRequest gu = bl.guestRequestByOrder(item);
+                GuestRequest gu = bl.guestRequestByOrder(CurntHostingUnit.orders[i]);
                 Canvas canvas = new Canvas();
                 canvas.Height = 23;
                 boxItem[i] = new ListBoxItem();
@@ -58,7 +83,7 @@ namespace PLWPF
                 textBlock.Height = 23;
                 textBlock.FontSize = 18;
                 textBlock.Foreground = Brushes.Brown;
-                textBlock.Text = gu.EntryDate.ToString("dd/MM/yyyy") + ":תאריך התחלה " + gu.ReleaseDate.ToString("dd/MM/yyyy") + " תאריך סיום ";
+                textBlock.Text = "entry date: " + gu.EntryDate.ToString("dd/MM/yyyy") + "  release date: " + gu.ReleaseDate.ToString("dd/MM/yyyy") ;
                 canvas.Children.Add(textBlock);
                 thickness = new Thickness(0, 0, 700, 0);
                 button[i] = new Button();
@@ -69,7 +94,7 @@ namespace PLWPF
                 button[i].Width = 110;
                 button[i].Margin = thickness;
                 button[i].Name = "button" + i;
-                if (item.status == (int)Status.Complate || item.status == (int)Status.Faild || item.status == (int)Status.SentMail)
+                if (CurntHostingUnit.orders[i].status == (int)Status.Complate || CurntHostingUnit.orders[i].status == (int)Status.Faild || CurntHostingUnit.orders[i].status == (int)Status.SentMail)
                 {
                     button[i].IsEnabled = false;
                     button[i].Background = Brushes.Red;
@@ -78,11 +103,10 @@ namespace PLWPF
                 }
                 canvas.Children.Add(button[i]);
                 boxItem[i].Content = canvas;
-                WindowOfOrder.Items.Add(boxItem[i]);
-                i++;
+                WindowOfOrder.Items.Add(boxItem[i]);                
                 WindowOfOrder.Opacity = 1;
             }
-            if (!CurntHostingUnit.orders.Any())
+            if (coutOfOreder==0)
                 MessageBox.Show("אין נתונים להצגה");
         }
         private void OrderChoosed(object sender, RoutedEventArgs e)
@@ -90,7 +114,7 @@ namespace PLWPF
             try
             {
                 int index = 0;
-                for (int i = 0; i < CurntHostingUnit.orders.Count; i++)
+                for (int i = 0; i < coutOfOreder; i++)
                 {
                     if (button[i] == (Button)sender)
                     {
@@ -99,14 +123,15 @@ namespace PLWPF
                 }
                 CurntHostingUnit.orders[index].status = (int)Status.Complate;
                 bl.updateOrder(CurntHostingUnit.orders[index]);
-                SendMail(bl.guestRequestByOrder(CurntHostingUnit.orders[index]));
+                ForMail = bl.guestRequestByOrder(CurntHostingUnit.orders[index]);
+                MailSend.RunWorkerAsync();
                 /// need to send mail to the client by thread///
                 MessageBox.Show("נשלח מייל ללקוח");
                 button[index].IsEnabled = false;
                 button[index].Background = Brushes.Red;
                 button[index].Foreground = Brushes.Black;
-                button[index].Content = "סגור";
-                PrintOrder();
+                button[index].Content = "סגור";                
+                
             }
             catch (OurException ex)
             {
@@ -126,12 +151,13 @@ namespace PLWPF
         {
             try
             {
-                CurntHostingUnit = IsString ? bl.TheHostingUnitByName(HostingKey.Text) : bl.TheHostingUnitByKey(int.Parse(HostingKey.Text));
+                CurntHostingUnit = IsString ? bl.TheHostingUnitByName(HostingKey.Text) : bl.TheHostingUnitByKey(int.Parse(HostingKey.Text));                
                 if (CurntHostingUnit == null)
                     throw new OurException();
-                button = new Button[CurntHostingUnit.orders.Count];
+                coutOfOreder = CurntHostingUnit.orders.Count;
+                button = new Button[coutOfOreder];
                 IsPressed = true;
-
+                IsString = false;
             }
             catch (OurException)
             {
@@ -141,28 +167,29 @@ namespace PLWPF
             if (IsPressed)
                 PrintOrder();
         }
-        public void SendMail(GuestRequest gu)
-        {
+        public void SendMail()
+        {            
             MailMessage message = new MailMessage();
-            message.To.Add(gu.MailAddress);
+            message.To.Add(ForMail.MailAddress);
             message.From = new MailAddress(CurntHostingUnit.Owner.MailAddress);
             message.Subject = "!נמצאה לך יחידת אירוח מתאימה";
             message.Body = "hi! i want to sugggest you to relax in " + CurntHostingUnit.HostingUnitName
                 + "\n" + "my phone is: " + CurntHostingUnit.Owner.FhoneNumber + "\n i would like to speak with you! \n"
                 + CurntHostingUnit.Owner.PrivateName + CurntHostingUnit.Owner.FamilyName;
             message.IsBodyHtml = true;
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "dvirsivan1994.gmail.com";
-            smtp.Credentials = new System.Net.NetworkCredential("dvirsivan1994@gmail.com",
-"dvir4210200");
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");           
+            smtp.Credentials = new System.Net.NetworkCredential("nicerest5@gmail.com","Berto052783");
+            smtp.UseDefaultCredentials = false;
+            //smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            //smtp.Port = 587;
             smtp.EnableSsl = true;
             try
             {
                 smtp.Send(message);
             }
-            catch
+            catch 
             {
-                MessageBox.Show("יש בעיה בשליחת המייל");
+               // MessageBox.Show("המייל לא נשלח");               
             }
         }
 

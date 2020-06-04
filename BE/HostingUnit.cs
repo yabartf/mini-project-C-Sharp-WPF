@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +21,45 @@ namespace BE
     [Serializable]
     public class HostingUnit : IComparable
     {
-
+        //public int[] matrix_availability = new int[10] {1,2,3,4,5,6,7,8,9,10 };//to XML serializer
         [XmlIgnore]
         public bool[,] Diary = new bool[12, 31];
+        [XmlArray("Diary")]
+        public bool[] matrix_availability
+        {
+            get
+            {
+                return Diary.Flatten();
+                //if (Diary == null)
+                //    return null;
+                //string result = "";
+                //if (Diary != null)
+                //{
+                //    int sizeA = Diary.GetLength(0);
+                //    int sizeB = Diary.GetLength(1);
+                //    result += "" + sizeA + "," + sizeB;
+                //    for (int i = 0; i < sizeA; i++)
+                //        for (int j = 0; j < sizeB; j++)
+                //            result += "," + Diary[i, j];
+                // }
+                //return result;
+            }
+            set
+            {
+                Diary = value.Expand(12);
+                //if (value != null && value.Length > 0)
+                //{
+                //    string[] values = value.Split(',');
+                //    int sizeA = int.Parse(values[0]);
+                //    int sizeB = int.Parse(values[1]);
+                //    Diary = new bool[sizeA, sizeB];
+                //    int index = 2;
+                //    for (int i = 0; i < sizeA; i++)
+                //        for (int j = 0; j < sizeB; j++)
+                //            Diary[i, j] = bool.Parse(values[index++]);
+            }
+        }
 
-        //[XmlArray("Diary")]
-        //public bool[] DiaryToXml
-        //{
-        //    get { return Diary.Flatten(); }
-        //    set { Diary = value.Expand(12); }
-        //}
 
         public int hostingUnitKey { get; set; }
         public int pricePerNight { get; set; }
@@ -58,21 +87,19 @@ namespace BE
             return ((IComparable)hostingUnitKey).CompareTo(obj);
         }
 
-        
-
         public int area { get; set; }
 
     }
     public static class Tools
     {
-        public static bool[] Flatten(this bool[,] arr)
+        public static T[] Flatten<T>(this T[,] arr)
         {
             int rows = arr.GetLength(0);
             int columns = arr.GetLength(1);
-            bool[] arrFlattened = new bool[rows * columns];
-            for (int j = 0; j < rows; j++)
+            T[] arrFlattened = new T[rows * columns];
+            for (int i = 0; i < rows; i++)
             {
-                for (int i = 0; i < columns; i++)
+                for (int j = 0; j < columns; j++)
                 {
                     var test = arr[i, j];
                     arrFlattened[i * rows + j] = arr[i, j];
@@ -80,22 +107,21 @@ namespace BE
             }
             return arrFlattened;
         }
-        public static bool[,] Expand(this bool[] arr, int rows)
+        public static T[,] Expand<T>(this T[] arr, int rows)
         {
             int length = arr.GetLength(0);
             int columns = length / rows;
-            bool[,] arrExpanded = new bool[rows, columns];
-            for (int j = 0; j < rows; j++)
+            T[,] arrExpanded = new T[rows, columns];
+            for (int i = 0; i < rows; i++)
             {
-                for (int i = 0; i < columns; i++)
+                for (int j = 0; j < columns; j++)
                 {
-                    arrExpanded[i, j] = arr[i + j * rows];
+                    arrExpanded[i, j] = arr[i * rows + j];
                 }
             }
             return arrExpanded;
         }
-
-
     }
-
 }
+
+    

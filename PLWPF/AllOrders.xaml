@@ -1,0 +1,22 @@
+﻿<Window x:Class="PLWPF.AllOrders"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLWPF"
+        mc:Ignorable="d"
+        Title="AllOrders" Height="450" Width="800">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="https://www.kala-crm.co.il/common/assets/421/412/2_57b3a9a0609f6.png"/>
+        </Grid.Background>
+        <ListBox Name="ListOfOrder" HorizontalAlignment="Left" ItemsSource="{Binding}" FontFamily="Yu Gothic UI Semibold" FontSize="12"  Margin="152,125,0,0" VerticalAlignment="Top" Width="519"/>
+        <Label Content=":מיין על פי" HorizontalAlignment="Left" Margin="397,58,0,0" FontFamily="Yu Gothic UI Semibold" FontSize="13" Foreground="Yellow" VerticalAlignment="Top" Width="77"/>
+        <ComboBox Name="combo" HorizontalAlignment="Left" Margin="289,58,0,0"  FontFamily="Yu Gothic UI Semibold" FontSize="13" Foreground="Black"  VerticalAlignment="Top" Width="103" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Content="סטטוס הזמנה"/>
+            <ComboBoxItem Content="מספר דרישת לקוח"/>
+            <ComboBoxItem Content="מספר יחידת אירוח"/>
+        </ComboBox>
+
+    </Grid>
+</Window>

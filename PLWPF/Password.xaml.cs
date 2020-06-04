@@ -31,6 +31,7 @@ namespace PLWPF
             if (PasswordBox.Password == "1234")
             {
                 MainWindow.PasTrue = true;
+                HostingUnitManage.PasTrue = true;
                 Close();
             }
         }
