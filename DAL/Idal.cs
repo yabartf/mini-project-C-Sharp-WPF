@@ -15,10 +15,22 @@ namespace DAL
         void deleteHostingUnit(HostingUnit hu);
         void updateHostingUnit(HostingUnit hu);
         void addOrder(GuestRequest g, List<HostingUnit> suites);
-        void updateOrder(Order ord);        
+        void updateOrder(Order ord);
         List<HostingUnit> GetAllHostingUnits();
         List<GuestRequest> getAllGuests();
         List<Order> getAllOrder();
         List<BankBranch> GetAllBankBranch();
+        bool didHaveNeme(string name);
+        HostingUnit hostingUnitExist(object key);
+    }
+    public class FuctoryDal
+    {
+        private static Idal instance = null;
+        public static Idal getDal()
+        {
+            if (instance == null)
+                instance = new DAL_Xml_imp();
+            return instance;
+        }
     }
 }

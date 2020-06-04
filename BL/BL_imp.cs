@@ -13,10 +13,14 @@ namespace BL
 {
     public class BL_imp : IBL
     {
-        DAL_Xml_imp dal = DAL_Xml_imp.getDal_XML();
-        private static BL_imp bl = null;       
+        Idal dal = FuctoryDal.getDal();
 
-        
+        System.ComponentModel.BackgroundWorker b;
+        public BL_imp()
+        {
+            new Thread(UpdateAllOrders);
+        }
+
         #region Order Functions
         public void UpdateAllOrders()
         {
@@ -537,20 +541,6 @@ namespace BL
 
 
         #endregion
-
-        System.ComponentModel.BackgroundWorker b;
-        private BL_imp()
-        {            
-            new Thread(UpdateAllOrders);
-        }
-
-        public static BL_imp getBl()
-        {
-            if (bl == null)
-                bl = new BL_imp();
-            return bl;
-        }
-
         
         public bool craditAuthorization(Host h, Order order)
         {

@@ -21,7 +21,7 @@ namespace BL
         List<Order> getAllOrder();
         List<BankBranch> GetAllBankBranch();
         void UpdateAllOrders();        
-        bool checkGuestRequestDetails(GuestRequest guestRequest);
+        
         bool IsCommonDates(GuestRequest source, GuestRequest other);
         IEnumerable<GuestRequest> li();
         Dictionary<int, List<GuestRequest>> groupGuestRequestByArea();

@@ -25,7 +25,7 @@ namespace PLWPF
         private ObservableCollection<Order> listByGuest = new ObservableCollection<Order>();
         private ObservableCollection<Order> listByStatus = new ObservableCollection<Order>();
         private ObservableCollection<Order> listByHosting = new ObservableCollection<Order>();
-        BL_imp bl = BL_imp.getBl();
+        IBL bl = FuctoryBl.getBl();
         public AllOrders()
         {
             InitializeComponent();
