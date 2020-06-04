@@ -20,17 +20,5 @@ namespace DAL
         List<GuestRequest> getAllGuests();
         List<Order> getAllOrder();
         List<BankBranch> GetAllBankBranch();
-        bool didHaveNeme(string name);
-        HostingUnit hostingUnitExist(object key);
-    }
-    public class fuctoryDal
-    {
-        private static DAL_Xml_imp instance = null;
-        public static DAL_Xml_imp getDal()
-        {
-            if (instance == null)
-                instance = new DAL_Xml_imp();
-            return instance;
-        }
     }
 }

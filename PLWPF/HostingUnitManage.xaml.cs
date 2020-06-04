@@ -26,7 +26,7 @@ namespace PLWPF
     public partial class HostingUnitManage : Window
     {
         static public bool PasTrue = false;
-        IBL bl = FuctoryBl.getBl();
+        BL_imp bl = BL_imp.getBl();
         HostingUnit hostingunit = new HostingUnit();
         Host owner = new Host();
         BankBranch BankBranchDetails = new BankBranch();

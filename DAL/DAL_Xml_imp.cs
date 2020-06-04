@@ -21,15 +21,20 @@ namespace DAL
         private string GuestRequestsPath = @"guestRequests.xml";
         private string hostingUnitsPath = @"hostingUnits.xml";
         private string configPath = @"config.xml";
-
-        XElement orderRoot = new XElement("orders");       
+        XElement orderRoot = new XElement("orders");
+        //XDocument DocorderRoot = XDocument.Load("Orders.xml");
         XElement hostingsRoot = new XElement("hosting_uints");
         XElement guestRequestRoot = new XElement("guest_request");
         XElement configRoot = new XElement("gonfigs");
-        
+        private static DAL_Xml_imp instance = null;
         List<BankBranch> bankBranches = new List<BankBranch>();
-        
-        public DAL_Xml_imp()
+        public static DAL_Xml_imp getDal_XML()
+        {
+            if (instance == null)
+                instance = new DAL_Xml_imp();
+            return instance;
+        }
+        private DAL_Xml_imp()
         {
             if (!File.Exists(OrdersPath))
             {
